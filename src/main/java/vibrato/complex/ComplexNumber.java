@@ -1,0 +1,85 @@
+package vibrato.complex;
+
+public class ComplexNumber implements Complex<ComplexNumber> {
+
+    private double x;
+    private double y;
+
+    public ComplexNumber() {
+        this(0, 0);
+    }
+
+    public ComplexNumber(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public static ComplexNumber createXY(double x, double y) {
+        return new ComplexNumber(x, y);
+    }
+
+    public static ComplexNumber createLA(double l, double a) {
+        ComplexNumber complexNumber = new ComplexNumber();
+        return complexNumber.setLA(l, a);
+    }
+
+    @Override
+    public double x() {
+        return x;
+    }
+
+    @Override
+    public double y() {
+        return y;
+    }
+
+    @Override
+    public ComplexNumber setXY(double x, double y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    }
+
+    private ComplexNumber copy() {
+        ComplexNumber c = new ComplexNumber();
+        c.set(this);
+        return c;
+    }
+
+    public ComplexNumber plus(Complex c) {
+        return copy().add(c);
+    }
+
+    public ComplexNumber minus(Complex c) {
+        return copy().sub(c);
+    }
+
+    public ComplexNumber negated() {
+        return copy().negate();
+    }
+
+    public ComplexNumber conjugate() {
+        return copy().setXY(x, -y);
+    }
+
+    public ComplexNumber times(Complex c) {
+        return copy().mul(c);
+    }
+
+    public ComplexNumber scale(double s) {
+        return copy().mul(s);
+    }
+
+    public ComplexNumber dividedBy(Complex c) {
+        return copy().div(c);
+    }
+
+    public ComplexNumber reciprocal() {
+        return copy().reciprocate();
+    }
+
+    public String toString() {
+        return toXYString();
+    }
+
+}
