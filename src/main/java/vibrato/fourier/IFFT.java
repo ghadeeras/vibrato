@@ -13,15 +13,15 @@ public class IFFT extends FFT {
     }
 
     @Override
-    protected double getWAngle(int index) {
-        return -super.getWAngle(index);
+    protected double getWAngle(int index, int maxIndex) {
+        return -super.getWAngle(index, maxIndex);
     }
 
     @Override
     protected void processInput(ComplexBuffer.Pointer pointer) {
         double normalizationFactor = 1.0D / frequencySamplesCount();
         for (int i = 0; i < pointer.buffer().size(); i++) {
-            pointer.slideTo(i).mul(normalizationFactor);
+            pointer.slideTo(i).scale(normalizationFactor);
         }
     }
 

@@ -10,6 +10,7 @@ public class FFT {
     private final int n;
     private final int[] shuffledIndexes;
     private final ComplexNumber[] ws;
+    private final ComplexNumber calculationResult = new ComplexNumber();
 
     private Data input;
     private Data output;
@@ -38,13 +39,13 @@ public class FFT {
     private ComplexNumber[] calculateWs(int n) {
         ComplexNumber[] ws = new ComplexNumber[n / 2];
         for (int i = 0; i < ws.length; i++) {
-            ws[i] = ComplexNumber.createLA(1, getWAngle(i));
+            ws[i] = ComplexNumber.createLA(1, getWAngle(i, ws.length));
         }
         return ws;
     }
 
-    protected double getWAngle(int index) {
-        double ratio = (double) index / (double) ws.length;
+    protected double getWAngle(int index, int maxIndex) {
+        double ratio = (double) index / (double) maxIndex;
         return -Math.PI * ratio;
     }
 
@@ -136,9 +137,13 @@ public class FFT {
             if (j < i) {
                 continue;
             }
-            setIndexes(i, j);
-            output.pointer1.set(input.pointer2);
-            output.pointer2.set(input.pointer1);
+            if (i != j) {
+                setIndexes(i, j);
+                output.pointer1.set(input.pointer2);
+                output.pointer2.set(input.pointer1);
+            } else {
+                output.pointer1.slideTo(i).set(input.pointer1.slideTo(i));
+            }
         }
     }
 
@@ -169,8 +174,9 @@ public class FFT {
         count--;
         for (int i = step; count > 0; i+= step) {
             setIndexes(index1, index2);
-            output.pointer1.set(input.pointer2).mul(ws[i]).add(input.pointer1);
-            output.pointer1.set(input.pointer2).mul(ws[i]).sub(input.pointer1).negate();
+            calculationResult.set(input.pointer2).mul(ws[i]);
+            output.pointer1.set(input.pointer1).add(calculationResult);
+            output.pointer2.set(input.pointer1).sub(calculationResult);
             index1++;
             index2++;
             count--;

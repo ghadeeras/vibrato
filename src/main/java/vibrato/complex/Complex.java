@@ -39,15 +39,23 @@ public interface Complex<C extends Complex<?>> {
     }
 
     default C mul(Complex c) {
-        double x1 = x();
-        double y1 = y();
         double x2 = c.x();
         double y2 = c.y();
-        return setXY(x1 * x2 - y1 * y2, x1 * y2 + y1 * x2);
+        return mul(x2, y2);
     }
 
-    default C mul(double s) {
-        return setXY(s * x(), s * y());
+    default C mul(double x, double y) {
+        double x1 = x();
+        double y1 = y();
+        return setXY(x1 * x - y1 * y, x1 * y + y1 * x);
+    }
+
+    default C scale(double factor) {
+        return setXY(factor * x(), factor * y());
+    }
+
+    default C rotate(double angle) {
+        return mul(Math.cos(angle), Math.sin(angle));
     }
 
     default C div(Complex c) {
