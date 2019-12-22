@@ -4,8 +4,24 @@ public interface RealFunction {
 
     double apply(double x);
 
+    default RealFunction apply(RealFunction function) {
+        return x -> apply(function.apply(x));
+    }
+
+    default Signal apply(Signal signal) {
+        return t -> apply(signal.at(t));
+    }
+
+    default DiscreteRealFunction apply(DiscreteRealFunction function) {
+        return x -> apply(function.apply(x));
+    }
+
+    default DiscreteSignal apply(DiscreteSignal signal) {
+        return t -> apply(signal.at(t));
+    }
+
     default RealFunction then(RealFunction f) {
-        return x -> f.apply(apply(x));
+        return f.apply(this);
     }
 
     default RealFunction shiftOnXAxis(double shift) {

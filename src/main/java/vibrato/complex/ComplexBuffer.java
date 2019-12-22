@@ -23,19 +23,6 @@ public class ComplexBuffer {
         yBuffer = new Buffer(ys);
     }
 
-    public ComplexBuffer(Complex[] complexNumbers) {
-        this(complexNumbers.length);
-        for (int i = complexNumbers.length - 1; i >= 0; i--) {
-            set(i, complexNumbers[i]);
-        }
-    }
-
-    public ComplexBuffer(ComplexBuffer complexBuffer) {
-        this(complexBuffer.xs.length);
-        System.arraycopy(complexBuffer.xs, 0, xs, 0, xs.length);
-        System.arraycopy(complexBuffer.ys, 0, ys, 0, ys.length);
-    }
-
     public int size() {
         return size;
     }
@@ -46,10 +33,6 @@ public class ComplexBuffer {
 
     public RealVector ys() {
         return yBuffer;
-    }
-
-    private void set(int index, Complex complexNumber) {
-        set(index, complexNumber.x(), complexNumber.y());
     }
 
     private void set(int index, double x, double y) {
@@ -99,6 +82,11 @@ public class ComplexBuffer {
         public Pointer slideTo(int index) {
             this.index = index;
             return this;
+        }
+
+        @Override
+        public String toString() {
+            return toXYString();
         }
 
     }

@@ -10,7 +10,8 @@ public class Conv {
     private final ComplexBuffer frequencyResponse;
     private final ComplexBuffer.Pointer frequencyResponsePointer;
 
-    public Conv(RealVector impulseResponse, int n) {
+    public Conv(RealVector impulseResponse) {
+        int n = impulseResponse.size();
         fft = new FFT(n);
         ifft = new IFFT(n);
         frequencyResponse = new ComplexBuffer(n);

@@ -54,7 +54,7 @@ public class ComplexNumberTest extends TestBase {
     public void test_scaling() {
         forAnyOf(complexNumbers(), c -> {
             forAnyOf(doubles(), s -> {
-                assertThat(c.scale(s), approximatelyEqualTo(c.times(createLA(s, 0))));
+                assertThat(c.scaled(s), approximatelyEqualTo(c.times(createLA(s, 0))));
             });
         });
     }

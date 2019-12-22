@@ -66,8 +66,12 @@ public class ComplexNumber implements Complex<ComplexNumber> {
         return copy().mul(c);
     }
 
-    public ComplexNumber scale(double s) {
-        return copy().mul(s);
+    public ComplexNumber scaled(double factor) {
+        return copy().scale(factor);
+    }
+
+    public ComplexNumber rotated(double angle) {
+        return copy().rotate(angle);
     }
 
     public ComplexNumber dividedBy(Complex c) {
