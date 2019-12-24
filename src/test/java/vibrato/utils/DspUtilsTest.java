@@ -10,7 +10,6 @@ import java.util.stream.IntStream;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static vibrato.complex.ComplexNumber.createXY;
-import static vibrato.testtools.VibratoMatchers.approximatelyEqualTo;
 import static vibrato.utils.DspUtils.*;
 
 public class DspUtilsTest extends TestBase {

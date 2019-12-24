@@ -1,6 +1,8 @@
 package vibrato.dspunits.sources;
 
 import vibrato.dspunits.DspUnit;
+import vibrato.oscillators.Operation;
+import vibrato.oscillators.State;
 import vibrato.utils.FixedPointSample;
 import vibrato.vectors.RealVector;
 
@@ -9,8 +11,6 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 
 import static javax.sound.sampled.AudioFormat.Encoding;
-import static vibrato.oscillators.Oscillator.Operation;
-import static vibrato.oscillators.Oscillator.State;
 
 public class AudioSource extends DspUnit implements RealVector, State {
 
@@ -43,7 +43,7 @@ public class AudioSource extends DspUnit implements RealVector, State {
     }
 
     @Override
-    protected Operation[] operations() {
+    public Operation[] operations() {
         return ops(generation);
     }
 

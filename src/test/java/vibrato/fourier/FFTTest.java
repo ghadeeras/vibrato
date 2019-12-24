@@ -3,7 +3,10 @@ package vibrato.fourier;
 import org.junit.Test;
 import vibrato.complex.ComplexBuffer;
 import vibrato.complex.ComplexNumber;
-import vibrato.functions.*;
+import vibrato.functions.DiscreteRealFunction;
+import vibrato.functions.DiscreteSignal;
+import vibrato.functions.Linear;
+import vibrato.functions.Pulse;
 import vibrato.testtools.Generator;
 import vibrato.testtools.TestBase;
 import vibrato.vectors.Buffer;
@@ -14,7 +17,7 @@ import java.util.stream.DoubleStream;
 
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-import static vibrato.functions.Operator.*;
+import static vibrato.functions.Operator.addition;
 
 public class FFTTest extends TestBase {
 

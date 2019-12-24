@@ -1,7 +1,7 @@
 package vibrato.vectors;
 
-import static vibrato.oscillators.Oscillator.Operation;
-import static vibrato.oscillators.Oscillator.State;
+import vibrato.oscillators.Operation;
+import vibrato.oscillators.State;
 
 public abstract class AbstractDelayLine implements RealVector, State {
 

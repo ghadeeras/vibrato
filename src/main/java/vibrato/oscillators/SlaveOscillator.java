@@ -1,7 +1,5 @@
 package vibrato.oscillators;
 
-import static vibrato.oscillators.Oscillator.State;
-
 public class SlaveOscillator extends Oscillator implements State {
 
     private final int period;
@@ -12,7 +10,6 @@ public class SlaveOscillator extends Oscillator implements State {
     private int t = 0;
 
     SlaveOscillator(Oscillator oscillator, int period, int phase) {
-        super(oscillator.system());
         this.period = period;
         this.phase = phase % period;
         this.absolutePeriod = period * oscillator.absolutePeriod();
