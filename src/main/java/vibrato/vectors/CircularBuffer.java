@@ -39,7 +39,6 @@ public class CircularBuffer extends AbstractDelayLine {
 
     @Override
     protected void insert(double value) {
-//        System.out.println(DoubleStream.of(this.asSignal().samples(size(), 0, 1)).boxed().collect(Collectors.toList()));
         rotate();
         values[lastIndex] = value;
     }

@@ -1,14 +1,12 @@
 package vibrato.dspunits;
 
-import vibrato.oscillators.Oscillator;
+import vibrato.oscillators.Operation;
 
 import java.util.stream.Stream;
 
-import static vibrato.oscillators.Oscillator.Operation;
-
 public abstract class DspUnit {
 
-    protected abstract Operation[] operations();
+    public abstract Operation[] operations();
 
     protected static Operation[] ops(DspUnit... dspUnits) {
         return Stream.of(dspUnits)
@@ -25,10 +23,6 @@ public abstract class DspUnit {
         return Stream.of(operations)
             .flatMap(Stream::of)
             .toArray(Operation[]::new);
-    }
-
-    public <U extends DspUnit> void connectTo(Oscillator oscillator) {
-        oscillator.triggers(operations());
     }
 
 }

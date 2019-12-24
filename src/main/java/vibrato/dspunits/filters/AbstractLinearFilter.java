@@ -2,9 +2,8 @@ package vibrato.dspunits.filters;
 
 import vibrato.dspunits.DspUnit;
 import vibrato.dspunits.Wire;
+import vibrato.oscillators.Operation;
 import vibrato.vectors.*;
-
-import static vibrato.oscillators.Oscillator.Operation;
 
 public abstract class AbstractLinearFilter extends DspUnit implements RealValue {
 
@@ -32,7 +31,7 @@ public abstract class AbstractLinearFilter extends DspUnit implements RealValue 
     }
 
     @Override
-    protected Operation[] operations() {
+    public Operation[] operations() {
         return ops(
             ops(inputPlusFeedback),
             ops(output),

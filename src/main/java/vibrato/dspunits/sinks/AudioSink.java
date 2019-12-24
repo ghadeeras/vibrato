@@ -1,6 +1,8 @@
 package vibrato.dspunits.sinks;
 
 import vibrato.dspunits.DspUnit;
+import vibrato.oscillators.Operation;
+import vibrato.oscillators.State;
 import vibrato.utils.FixedPointSample;
 import vibrato.vectors.RealVector;
 
@@ -9,8 +11,6 @@ import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 
 import static javax.sound.sampled.AudioFormat.Encoding;
-import static vibrato.oscillators.Oscillator.Operation;
-import static vibrato.oscillators.Oscillator.State;
 
 public class AudioSink extends DspUnit implements State {
 
@@ -35,7 +35,7 @@ public class AudioSink extends DspUnit implements State {
     }
 
     @Override
-    protected Operation[] operations() {
+    public Operation[] operations() {
         return ops(consumption);
     }
 

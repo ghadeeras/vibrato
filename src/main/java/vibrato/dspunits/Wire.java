@@ -1,9 +1,8 @@
 package vibrato.dspunits;
 
+import vibrato.oscillators.Operation;
+import vibrato.oscillators.State;
 import vibrato.vectors.RealValue;
-
-import static vibrato.oscillators.Oscillator.Operation;
-import static vibrato.oscillators.Oscillator.State;
 
 public class Wire extends DspUnit implements RealValue, State {
 
@@ -27,7 +26,7 @@ public class Wire extends DspUnit implements RealValue, State {
     }
 
     @Override
-    protected Operation[] operations() {
+    public Operation[] operations() {
         return ops(conductivity);
     }
 

@@ -8,6 +8,7 @@ import vibrato.dspunits.sources.WaveSource;
 import vibrato.functions.DiscreteSignal;
 import vibrato.functions.Sinc;
 import vibrato.system.DspSystem;
+import vibrato.system.DspSystemBuilder;
 import vibrato.vectors.RealValue;
 
 import javax.sound.sampled.AudioInputStream;
@@ -16,19 +17,15 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
-public class Main extends DspSystem {
+public class Main extends DspSystemBuilder<DspSystem.Master> {
 
-    private Main(String inputMediaFile) throws IOException, UnsupportedAudioFileException {
-        this(AudioSystem.getAudioInputStream(new File(inputMediaFile)));
-    }
+    private Main(DspSystem.Master dspSystem, AudioInputStream audioInputStream) {
+        super(dspSystem);
 
-    private Main(AudioInputStream audioInputStream) {
-        super(audioInputStream.getFormat().getFrameRate());
-
-        int waveLength = (int) masterClockSpeed;
+        int waveLength = (int) dspSystem().clockSpeed();
         DiscreteSignal sinc = Sinc.sinc()
-            .compress(500 * zHertz)
-            .delay(masterClockSpeed / 2)
+            .compress(500 * dspSystem().zHertz())
+            .delay(dspSystem().clockSpeed() / 2)
             .discrete();
 
         AudioSource source = audioSource(audioInputStream.getFormat(), audioInputStream);
@@ -39,8 +36,8 @@ public class Main extends DspSystem {
 
         SecondOrderFilter filter = secondOrderBPF(modulator,
             128,
-            500 * zHertz,
-            zHertz,
+            500 * dspSystem().zHertz(),
+            dspSystem().zHertz(),
             0.5
         );
 
@@ -51,14 +48,17 @@ public class Main extends DspSystem {
     }
 
     public void loop() throws IOException {
-        long cycles = Math.round(masterClockSpeed);
+        long cycles = Math.round(dspSystem().clockSpeed());
         while (System.in.available() == 0) {
-            masterOscillator().oscillate(cycles);
+            dspSystem().run(cycles);
         }
     }
 
     public static void main(String[] args) throws IOException, UnsupportedAudioFileException {
-        Main main = new Main(args[0]);
+        final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(args[0]));
+        float clockSpeed = audioInputStream.getFormat().getFrameRate();
+        DspSystem.Master dspSystem = new DspSystem.Master(clockSpeed);
+        Main main = new Main(dspSystem, audioInputStream);
         main.loop();
     }
 

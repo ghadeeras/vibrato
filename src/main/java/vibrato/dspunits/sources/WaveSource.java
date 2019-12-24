@@ -2,13 +2,12 @@ package vibrato.dspunits.sources;
 
 import vibrato.dspunits.DspUnit;
 import vibrato.functions.DiscreteSignal;
+import vibrato.oscillators.Operation;
+import vibrato.oscillators.State;
 import vibrato.vectors.Buffer;
 import vibrato.vectors.RealValue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static vibrato.oscillators.Oscillator.Operation;
-import static vibrato.oscillators.Oscillator.State;
 
 public class WaveSource extends DspUnit implements RealValue, State {
 
@@ -41,7 +40,7 @@ public class WaveSource extends DspUnit implements RealValue, State {
     }
 
     @Override
-    protected Operation[] operations() {
+    public Operation[] operations() {
         return ops(generation);
     }
 

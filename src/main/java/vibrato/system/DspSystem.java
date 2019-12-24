@@ -1,128 +1,93 @@
 package vibrato.system;
 
 import vibrato.dspunits.DspUnit;
-import vibrato.dspunits.Wire;
-import vibrato.dspunits.filters.iir.SecondOrderFilter;
-import vibrato.dspunits.sinks.AudioSink;
-import vibrato.dspunits.sources.AudioSource;
-import vibrato.dspunits.sources.RandomSource;
-import vibrato.dspunits.sources.WaveSource;
-import vibrato.functions.DiscreteSignal;
 import vibrato.oscillators.MasterOscillator;
+import vibrato.oscillators.Operation;
 import vibrato.oscillators.Oscillator;
-import vibrato.vectors.RealValue;
+import vibrato.oscillators.State;
 
-import javax.sound.sampled.AudioFormat;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class DspSystem {
+public abstract class DspSystem<O extends Oscillator> {
 
-    private final MasterOscillator masterOscillator = new MasterOscillator(this);
-    private final Map<Oscillator.State, List<Oscillator>> stateToOscillators = new HashMap<>();
-
-    protected final double masterClockSpeed;
+    protected final O oscillator;
+    protected final double clockSpeed;
     protected final double zHertz;
     protected final double zSecond;
 
-    public DspSystem(double masterClockSpeed) {
-        this.masterClockSpeed = masterClockSpeed;
-        this.zHertz = 2 * Math.PI / masterClockSpeed;
+    private DspSystem(O oscillator, double clockSpeed) {
+        this.oscillator = oscillator;
+        this.clockSpeed = clockSpeed;
+        this.zHertz = 2 * Math.PI / clockSpeed;
         this.zSecond = 1 / zHertz;
     }
 
-    protected final double clockSpeed(Oscillator oscillator) {
-        return masterClockSpeed / oscillator.absolutePeriod();
-    }
-
-    protected final double zHertz(Oscillator oscillator) {
-        return zHertz * oscillator.absolutePeriod();
-    }
-
-    protected final double zSecond(Oscillator oscillator) {
-        return zSecond / oscillator.absolutePeriod();
-    }
-
-    public MasterOscillator masterOscillator() {
-        return masterOscillator;
-    }
-
-    public void declareConnection(Oscillator.State state, Oscillator oscillator) {
-        List<Oscillator> oscillators = stateToOscillators.computeIfAbsent(state, s -> new LinkedList<>());
-        oscillators.stream().filter(oscillator::conflictsWith).findFirst().ifPresent(conflictingOscillator -> {
-            throw new RuntimeException("Oscillators conflict: " + oscillator + " and " + conflictingOscillator);
-        });
-        oscillators.add(oscillator);
-    }
-
-    public <U extends DspUnit> U connect(U unit, Oscillator oscillator) {
-        unit.connectTo(oscillator);
+    <U extends DspUnit> U connect(U unit) {
+        for (Operation operation : unit.operations()) {
+            declareConnection(operation.state(), oscillator);
+            oscillator.triggers(operation);
+        }
         return unit;
     }
 
-    public <U extends DspUnit> U connect(U unit) {
-        return connect(unit, masterOscillator);
+    protected abstract void declareConnection(State state, Oscillator oscillator);
+
+    public Slave subsystem(int period, int phase) {
+        return new Slave(this, period, phase);
     }
 
-    protected AudioSource audioSource(AudioFormat format, InputStream inputStream) {
-        return connect(new AudioSource(format, inputStream));
+    public double clockSpeed() {
+        return clockSpeed;
     }
 
-    protected WaveSource periodicWaveSource(DiscreteSignal signal, int period) {
-        return waveSource(signal, period, true);
+    public double zHertz() {
+        return zHertz;
     }
 
-    protected WaveSource transientWaveSource(DiscreteSignal signal, int length) {
-        return waveSource(signal, length, true);
+    public double zSecond() {
+        return zSecond;
     }
 
-    private WaveSource waveSource(DiscreteSignal signal, int length, boolean periodic) {
-        return connect(new WaveSource(signal, length, periodic));
+    public static class Master extends DspSystem<MasterOscillator> {
+
+        public final Map<State, List<Oscillator>> stateToOscillators = new HashMap<>();
+
+        public Master(double clockSpeed) {
+            super(new MasterOscillator(), clockSpeed);
+        }
+
+        @Override
+        protected void declareConnection(State state, Oscillator oscillator) {
+            List<Oscillator> oscillators = stateToOscillators.computeIfAbsent(state, s -> new LinkedList<>());
+            oscillators.stream().filter(oscillator::conflictsWith).findFirst().ifPresent(conflictingOscillator -> {
+                throw new RuntimeException("Oscillators conflict: " + oscillator + " and " + conflictingOscillator);
+            });
+            oscillators.add(oscillator);
+        }
+
+        public void run(long cycles) {
+            oscillator.oscillate(cycles);
+        }
+
     }
 
-    protected RandomSource randomSource(Long seed, boolean gaussian) {
-        return connect(new RandomSource(seed, gaussian));
+    public static class Slave extends DspSystem<Oscillator> {
+
+        private final DspSystem<?> parent;
+
+        private Slave(DspSystem<?> parent, int period, int phase) {
+            super(parent.oscillator.oscillator(period, phase), parent.clockSpeed / period);
+            this.parent = parent;
+        }
+
+        @Override
+        protected void declareConnection(State state, Oscillator oscillator) {
+            parent.declareConnection(state, oscillator);
+        }
+
     }
 
-    protected SecondOrderFilter secondOrderBPF(RealValue input, int constantGain, double peakFrequency, double bandWidth, double cutOffGain) {
-        SecondOrderFilter.Coefficients coefficients = SecondOrderFilter.bpf(constantGain, peakFrequency, bandWidth, cutOffGain);
-        return connect(new SecondOrderFilter(input, coefficients));
-    }
-
-    protected Wire wire(RealValue input) {
-        return connect(new Wire(input));
-    }
-
-    protected AudioSink audioSink(RealValue input, AudioFormat format) {
-        return connect(new AudioSink(input, format));
-    }
-
-    protected RealValue multiplication(RealValue firstInput, RealValue... otherInputs) {
-        return wire(() -> {
-            double result = firstInput.value();
-            for (RealValue input : otherInputs) {
-                result *= input.value();
-            }
-            return result;
-        });
-    }
-
-    protected RealValue average(RealValue firstInput, RealValue... otherInputs) {
-        int count = 1 + otherInputs.length;
-        RealValue sum = addition(firstInput, otherInputs);
-        return wire(() -> sum.value() / count);
-    }
-
-    protected RealValue addition(RealValue firstInput, RealValue... otherInputs) {
-        return wire(() -> {
-            double result = firstInput.value();
-            for (RealValue input : otherInputs) {
-                result += input.value();
-            }
-            return result;
-        });
-    }
 }
