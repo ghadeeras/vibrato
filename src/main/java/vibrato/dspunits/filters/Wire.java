@@ -1,10 +1,13 @@
-package vibrato.dspunits;
+package vibrato.dspunits.filters;
 
+import vibrato.dspunits.DspSource;
 import vibrato.oscillators.Operation;
 import vibrato.oscillators.State;
 import vibrato.vectors.RealValue;
 
-public class Wire extends DspUnit implements RealValue, State {
+import static vibrato.dspunits.DspUnit.ops;
+
+public class Wire implements DspSource<RealValue>, RealValue, State {
 
     private final RealValue input;
     private final Conductivity conductivity = new Conductivity();
@@ -14,15 +17,25 @@ public class Wire extends DspUnit implements RealValue, State {
 
     public Wire(RealValue input) {
         this.input = input;
+        this.output = 0;
+    }
+
+    @Override
+    public RealValue output() {
+        return this;
     }
 
     @Override
     public double value() {
-        if (!conductive) {
-            output = input.value();
-            conductive = true;
-        }
+        conduct();
         return output;
+    }
+
+    private void conduct() {
+        if (!conductive) {
+            conductive = true;
+            output = input.value();
+        }
     }
 
     @Override
@@ -47,4 +60,5 @@ public class Wire extends DspUnit implements RealValue, State {
         }
 
     }
+
 }

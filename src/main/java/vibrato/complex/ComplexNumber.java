@@ -41,16 +41,14 @@ public class ComplexNumber implements Complex<ComplexNumber> {
     }
 
     private ComplexNumber copy() {
-        ComplexNumber c = new ComplexNumber();
-        c.set(this);
-        return c;
+        return new ComplexNumber(x, y);
     }
 
-    public ComplexNumber plus(Complex c) {
+    public ComplexNumber plus(Complex<?> c) {
         return copy().add(c);
     }
 
-    public ComplexNumber minus(Complex c) {
+    public ComplexNumber minus(Complex<?> c) {
         return copy().sub(c);
     }
 
@@ -62,7 +60,7 @@ public class ComplexNumber implements Complex<ComplexNumber> {
         return copy().setXY(x, -y);
     }
 
-    public ComplexNumber times(Complex c) {
+    public ComplexNumber times(Complex<?> c) {
         return copy().mul(c);
     }
 
@@ -74,16 +72,12 @@ public class ComplexNumber implements Complex<ComplexNumber> {
         return copy().rotate(angle);
     }
 
-    public ComplexNumber dividedBy(Complex c) {
+    public ComplexNumber dividedBy(Complex<?> c) {
         return copy().div(c);
     }
 
     public ComplexNumber reciprocal() {
         return copy().reciprocate();
-    }
-
-    public String toString() {
-        return toXYString();
     }
 
 }

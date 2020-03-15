@@ -15,10 +15,6 @@ public class FFT {
     private Data input;
     private Data output;
 
-    public FFT() {
-        this(1024);
-    }
-
     public FFT(int minimumFrequencySamplesCount) {
         int bitCount = DspUtils.bitCount(minimumFrequencySamplesCount - 1);
         n = 1 << bitCount;
@@ -207,20 +203,19 @@ public class FFT {
     }
 
     private static class Data {
-        private final ComplexBuffer buffer;
+
         private final ComplexBuffer.Pointer pointer1;
         private final ComplexBuffer.Pointer pointer2;
 
         private Data(int size) {
-            buffer = new ComplexBuffer(size);
+            ComplexBuffer buffer = new ComplexBuffer(size);
             pointer1 = buffer.pointer();
             pointer2 = buffer.pointer();
         }
 
-        private Data at(int index1, int index2) {
+        private void at(int index1, int index2) {
             pointer1.slideTo(index1);
             pointer2.slideTo(index2);
-            return this;
         }
 
     }

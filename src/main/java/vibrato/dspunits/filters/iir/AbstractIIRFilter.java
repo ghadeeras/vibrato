@@ -7,11 +7,11 @@ import vibrato.vectors.RealVector;
 
 public abstract class AbstractIIRFilter extends AbstractLinearFilter {
 
-    public AbstractIIRFilter(RealValue input, int order) {
+    protected AbstractIIRFilter(RealValue input, int order) {
         super(input, order);
     }
 
-    public AbstractIIRFilter(RealValue input, AbstractDelayLine state) {
+    protected AbstractIIRFilter(RealValue input, AbstractDelayLine state) {
         super(input, state);
     }
 

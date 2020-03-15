@@ -11,13 +11,13 @@ public class VariableDelay extends AbstractFIRFilter {
     private final RealValue delay;
     private final Interpolator interpolator;
 
-    public VariableDelay(RealValue input, int maxDelay, RealValue delay, Interpolator interpolator) {
+    private VariableDelay(RealValue input, int maxDelay, RealValue delay, Interpolator interpolator) {
         super(input, maxDelay);
         this.delay = delay;
         this.interpolator = interpolator;
     }
 
-    public VariableDelay(RealValue input, AbstractDelayLine state, RealValue delay, Interpolator interpolator) {
+    private VariableDelay(RealValue input, AbstractDelayLine state, RealValue delay, Interpolator interpolator) {
         super(input, state);
         this.delay = delay;
         this.interpolator = interpolator;

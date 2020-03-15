@@ -7,12 +7,12 @@ import vibrato.vectors.RealVector;
 
 public abstract class AbstractFIRFilter extends AbstractLinearFilter {
 
-    public AbstractFIRFilter(RealValue input, int order) {
+    protected AbstractFIRFilter(RealValue input, int order) {
         super(input, order);
     }
 
-    public AbstractFIRFilter(RealValue input, AbstractDelayLine state) {
-        super(input, state);
+    protected AbstractFIRFilter(RealValue source, AbstractDelayLine state) {
+        super(source, state);
     }
 
     @Override

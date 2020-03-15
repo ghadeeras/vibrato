@@ -22,15 +22,15 @@ public interface Complex<C extends Complex<?>> {
         return setXY(l * Math.cos(a), l * Math.sin(a));
     }
 
-    default C set(Complex c) {
+    default C set(Complex<?> c) {
         return setXY(c.x(), c.y());
     }
 
-    default C add(Complex c) {
+    default C add(Complex<?> c) {
         return setXY(x() + c.x(), y() + c.y());
     }
 
-    default C sub(Complex c) {
+    default C sub(Complex<?> c) {
         return setXY(x() - c.x(), y() -  c.y());
     }
 
@@ -38,7 +38,7 @@ public interface Complex<C extends Complex<?>> {
         return setXY(-x(), -y());
     }
 
-    default C mul(Complex c) {
+    default C mul(Complex<?> c) {
         double x2 = c.x();
         double y2 = c.y();
         return mul(x2, y2);
@@ -58,7 +58,7 @@ public interface Complex<C extends Complex<?>> {
         return mul(Math.cos(angle), Math.sin(angle));
     }
 
-    default C div(Complex c) {
+    default C div(Complex<?> c) {
         return setLA(length() / c.length(), angle() - c.angle());
     }
 

@@ -84,11 +84,6 @@ public class ComplexBuffer {
             return this;
         }
 
-        @Override
-        public String toString() {
-            return toXYString();
-        }
-
     }
 
 }

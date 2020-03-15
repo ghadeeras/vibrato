@@ -1,21 +1,22 @@
 package vibrato.dspunits.filters;
 
-import vibrato.dspunits.DspUnit;
-import vibrato.dspunits.Wire;
+import vibrato.dspunits.DspSource;
 import vibrato.oscillators.Operation;
 import vibrato.vectors.*;
 
-public abstract class AbstractLinearFilter extends DspUnit implements RealValue {
+import static vibrato.dspunits.DspUnit.ops;
+
+public abstract class AbstractLinearFilter implements DspSource<RealValue>, RealValue {
 
     private final Wire inputPlusFeedback;
     private final Wire output;
     private final Operation stateUpdate;
 
-    public AbstractLinearFilter(RealValue input, int order) {
+    protected AbstractLinearFilter(RealValue input, int order) {
         this(input, order == 1 ? new DelayUnit() : new CircularBuffer(order));
     }
 
-    public AbstractLinearFilter(RealValue input, AbstractDelayLine state) {
+    protected AbstractLinearFilter(RealValue input, AbstractDelayLine state) {
         this.inputPlusFeedback = new Wire(inputPlusFeedbackValue(input, state));
         this.output = new Wire(outputValue(inputPlusFeedback, state));
         this.stateUpdate = state.readingFrom(inputPlusFeedback);
@@ -37,6 +38,11 @@ public abstract class AbstractLinearFilter extends DspUnit implements RealValue 
             ops(output),
             ops(stateUpdate)
         );
+    }
+
+    @Override
+    public RealValue output() {
+        return output;
     }
 
 }

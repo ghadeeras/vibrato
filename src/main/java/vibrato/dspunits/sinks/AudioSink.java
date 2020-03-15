@@ -1,5 +1,6 @@
 package vibrato.dspunits.sinks;
 
+import vibrato.dspunits.DspSink;
 import vibrato.dspunits.DspUnit;
 import vibrato.oscillators.Operation;
 import vibrato.oscillators.State;
@@ -12,31 +13,41 @@ import java.io.OutputStream;
 
 import static javax.sound.sampled.AudioFormat.Encoding;
 
-public class AudioSink extends DspUnit implements State {
+public class AudioSink implements DspUnit, State {
 
+    private final RealVector input;
     private final AudioFormat format;
-    private final RealVector channels;
     private final FixedPointSample sample;
     private final OutputStream stream;
 
     private final Consumption consumption = new Consumption();
 
-    public AudioSink(RealVector channels, AudioFormat format) {
-        this(channels, format, new AudioLineOutputStream(format));
-    }
-
-    public AudioSink(RealVector channels, AudioFormat format, OutputStream audioStream) {
+    private AudioSink(RealVector input, AudioFormat format, OutputStream audioStream) {
         boolean signed = format.getEncoding().equals(Encoding.PCM_SIGNED);
         int bufferSize = Math.round(format.getFrameSize() * format.getFrameRate());
+        this.input = input;
         this.format = format;
         this.stream = new BufferedOutputStream(audioStream, bufferSize);
         this.sample = new FixedPointSample(format.getSampleSizeInBits(), signed, format.isBigEndian());
-        this.channels = channels;
+    }
+
+    private void outputFrame() {
+        for (int i = 0; i < format.getChannels(); i++) {
+            sample.write(stream, input.value(i));
+        }
     }
 
     @Override
     public Operation[] operations() {
-        return ops(consumption);
+        return DspUnit.ops(consumption);
+    }
+
+    public static DspSink<RealVector> of(AudioFormat format) {
+        return into(new AudioLineOutputStream(format), format);
+    }
+
+    public static DspSink<RealVector> into(OutputStream audioStream, AudioFormat format) {
+        return input -> new AudioSink(input, format, audioStream);
     }
 
     private class Consumption implements Operation {
@@ -48,9 +59,7 @@ public class AudioSink extends DspUnit implements State {
 
         @Override
         public void readPhase() {
-            for (int i = 0; i < format.getChannels(); i++) {
-                sample.write(stream, channels.value(i));
-            }
+            outputFrame();
         }
 
         @Override

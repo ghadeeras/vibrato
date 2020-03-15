@@ -60,6 +60,10 @@ public interface RealFunction {
         return x -> -apply(-x);
     }
 
+    default DiscreteRealFunction discrete() {
+        return this::apply;
+    }
+
     default Signal asSignal() {
         return this::apply;
     }

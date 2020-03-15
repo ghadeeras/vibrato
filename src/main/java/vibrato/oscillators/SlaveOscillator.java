@@ -2,6 +2,7 @@ package vibrato.oscillators;
 
 public class SlaveOscillator extends Oscillator implements State {
 
+    private final Oscillator parent;
     private final int period;
     private final int phase;
     private final int absolutePeriod;
@@ -9,12 +10,19 @@ public class SlaveOscillator extends Oscillator implements State {
 
     private int t = 0;
 
-    SlaveOscillator(Oscillator oscillator, int period, int phase) {
+    public SlaveOscillator(Oscillator parent, int period, int phase) {
+        super(parent.clockSpeed() / period);
+        this.parent = parent;
         this.period = period;
         this.phase = phase % period;
-        this.absolutePeriod = period * oscillator.absolutePeriod();
-        this.absolutePhase = phase * oscillator.absolutePeriod() + oscillator.absolutePhase();
-        oscillator.triggers(new Oscillation());
+        this.absolutePeriod = period * parent.absolutePeriod();
+        this.absolutePhase = phase * parent.absolutePeriod() + parent.absolutePhase();
+        parent.triggers(new Oscillation());
+    }
+
+    @Override
+    protected void declareConnection(State state, Oscillator oscillator) {
+        parent.declareConnection(state, oscillator);
     }
 
     @Override

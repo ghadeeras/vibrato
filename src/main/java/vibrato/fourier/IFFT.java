@@ -4,12 +4,8 @@ import vibrato.complex.ComplexBuffer;
 
 public class IFFT extends FFT {
 
-    public IFFT() {
-        this(1024);
-    }
-
-    public IFFT(int minimumFrequencySamplesCount) {
-        super(minimumFrequencySamplesCount);
+    public IFFT(int minimumSamplesCount) {
+        super(minimumSamplesCount);
     }
 
     @Override
