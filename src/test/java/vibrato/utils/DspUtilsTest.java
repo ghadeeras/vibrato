@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static vibrato.complex.ComplexNumber.createXY;
+import static vibrato.complex.ComplexNumber.createRI;
 import static vibrato.utils.DspUtils.*;
 
 public class DspUtilsTest extends TestBase {
@@ -78,8 +78,8 @@ public class DspUtilsTest extends TestBase {
 
     @Test
     public void testGetRoots_TwoComplexRoots() {
-        forAnyOf(complexNumbers().filter(cn -> not(approximatelyEqualTo(0)).matches(cn.y())), cn -> {
-            ComplexNumber[] roots = getRoots(1, -2 * cn.x(), cn.length() * cn.length());
+        forAnyOf(complexNumbers().filter(cn -> not(approximatelyEqualTo(0)).matches(cn.imaginary())), cn -> {
+            ComplexNumber[] roots = getRoots(1, -2 * cn.real(), cn.length() * cn.length());
 
             assertThat(roots.length, equalTo(2));
             assertThat(roots, hasItemInArray(approximatelyEqualTo(cn)));
@@ -94,8 +94,8 @@ public class DspUtilsTest extends TestBase {
                 ComplexNumber[] roots = getRoots(1, -(root1 + root2), root1 * root2);
 
                 assertThat(roots.length, equalTo(2));
-                assertThat(roots, hasItemInArray(approximatelyEqualTo(createXY(root1, 0))));
-                assertThat(roots, hasItemInArray(approximatelyEqualTo(createXY(root2, 0))));
+                assertThat(roots, hasItemInArray(approximatelyEqualTo(createRI(root1, 0))));
+                assertThat(roots, hasItemInArray(approximatelyEqualTo(createRI(root2, 0))));
             });
         });
     }
@@ -106,7 +106,7 @@ public class DspUtilsTest extends TestBase {
             ComplexNumber[] roots = getRoots(1, -2 * root, root * root);
 
             assertThat(roots.length, equalTo(1));
-            assertThat(roots, hasItemInArray(approximatelyEqualTo(createXY(root, 0))));
+            assertThat(roots, hasItemInArray(approximatelyEqualTo(createRI(root, 0))));
         });
     }
 
@@ -116,7 +116,7 @@ public class DspUtilsTest extends TestBase {
             ComplexNumber[] roots = getRoots(0, 1, -root);
 
             assertThat(roots.length, equalTo(1));
-            assertThat(roots, hasItemInArray(approximatelyEqualTo(createXY(root, 0))));
+            assertThat(roots, hasItemInArray(approximatelyEqualTo(createRI(root, 0))));
         });
     }
 
@@ -143,10 +143,10 @@ public class DspUtilsTest extends TestBase {
             ComplexNumber[] roots = getRoots(a, b, c);
 
             for (ComplexNumber root : roots) {
-                ComplexNumber result = createXY(a, 0)
-                    .mul(root).add(createXY(b, 0))
-                    .mul(root).add(createXY(c, 0));
-                assertThat(result, approximatelyEqualTo(createXY(0, 0)));
+                ComplexNumber result = createRI(a, 0)
+                    .mul(root).add(createRI(b, 0))
+                    .mul(root).add(createRI(c, 0));
+                assertThat(result, approximatelyEqualTo(createRI(0, 0)));
             }
         });
     }

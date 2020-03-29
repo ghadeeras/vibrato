@@ -25,10 +25,10 @@ public class VibratoMatchers {
     }
 
     public static <T extends Complex<?>> Matcher<T> approximatelyEqualTo(T expectedValue) {
-        ComplexNumber expectedComplexValue = ComplexNumber.createXY(expectedValue.x(), expectedValue.y());
+        ComplexNumber expectedComplexValue = ComplexNumber.createRI(expectedValue.real(), expectedValue.imaginary());
         double acceptableError = expectedComplexValue.length() <= precision ? precision * precision : expectedComplexValue.length() * precision;
 
-        return new CustomTypeSafeMatcher<T>("Equal to " + expectedComplexValue.toXYString() + " +/- " + acceptableError) {
+        return new CustomTypeSafeMatcher<T>("Equal to " + expectedComplexValue.toRIString() + " +/- " + acceptableError) {
 
             @Override
             protected boolean matchesSafely(T actualValue) {

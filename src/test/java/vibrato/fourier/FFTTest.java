@@ -22,8 +22,8 @@ import static vibrato.functions.Operator.addition;
 public class FFTTest extends TestBase {
 
     private int sampleCount = 128;
-    private ComplexNumber zero = ComplexNumber.createXY(0, 0);
-    private ComplexNumber one = ComplexNumber.createXY(1, 0);
+    private ComplexNumber zero = ComplexNumber.createRI(0, 0);
+    private ComplexNumber one = ComplexNumber.createRI(1, 0);
 
     public Predicate<Double> notZero() {
         return not(approximatelyEqualTo(0))::matches;
@@ -105,11 +105,11 @@ public class FFTTest extends TestBase {
         ComplexBuffer fft2 = transform(signal2);
         ComplexBuffer fft1Plus2 = transform(signal1Plus2);
 
-        DiscreteRealFunction expectedXs = addition.apply(fft1.xs(), fft2.xs());
-        DiscreteRealFunction expectedYs = addition.apply(fft1.ys(), fft2.ys());
+        DiscreteRealFunction expectedXs = addition.apply(fft1.realParts(), fft2.realParts());
+        DiscreteRealFunction expectedYs = addition.apply(fft1.imaginaryParts(), fft2.imaginaryParts());
         for (int i = 0; i < fft1Plus2.size(); i++) {
-            assertThat(fft1Plus2.xs().apply(i), approximatelyEqualTo(expectedXs.apply(i)));
-            assertThat(fft1Plus2.ys().apply(i), approximatelyEqualTo(expectedYs.apply(i)));
+            assertThat(fft1Plus2.realParts().apply(i), approximatelyEqualTo(expectedXs.apply(i)));
+            assertThat(fft1Plus2.imaginaryParts().apply(i), approximatelyEqualTo(expectedYs.apply(i)));
         }
     }
 
@@ -123,11 +123,11 @@ public class FFTTest extends TestBase {
         ComplexBuffer fft = transform(signal);
         ComplexBuffer scaledFFT = transform(scaledSignal);
 
-        DiscreteRealFunction expectedXs = fft.xs().stretchOnYAxis(factor);
-        DiscreteRealFunction expectedYs = fft.ys().stretchOnYAxis(factor);
+        DiscreteRealFunction expectedXs = fft.realParts().stretchOnYAxis(factor);
+        DiscreteRealFunction expectedYs = fft.imaginaryParts().stretchOnYAxis(factor);
         for (int i = 0; i < scaledFFT.size(); i++) {
-            assertThat(scaledFFT.xs().apply(i), approximatelyEqualTo(expectedXs.apply(i)));
-            assertThat(scaledFFT.ys().apply(i), approximatelyEqualTo(expectedYs.apply(i)));
+            assertThat(scaledFFT.realParts().apply(i), approximatelyEqualTo(expectedXs.apply(i)));
+            assertThat(scaledFFT.imaginaryParts().apply(i), approximatelyEqualTo(expectedYs.apply(i)));
         }
     }
 
@@ -139,8 +139,8 @@ public class FFTTest extends TestBase {
         ComplexBuffer ifft = inverseTransform(fft);
 
         for (int i = 0; i < fft.size(); i++) {
-            assertThat(ifft.xs().apply(i), approximatelyEqualTo(signal.at(i)));
-            assertThat(ifft.ys().apply(i), approximatelyEqualTo(0));
+            assertThat(ifft.realParts().apply(i), approximatelyEqualTo(signal.at(i)));
+            assertThat(ifft.imaginaryParts().apply(i), approximatelyEqualTo(0));
         }
     }
 

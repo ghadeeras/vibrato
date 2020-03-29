@@ -18,15 +18,15 @@ public class WavPlusFilteredRandom extends DspApp {
     public WavPlusFilteredRandom(AudioInputStream stream) {
         super(stream.getFormat().getFrameRate());
 
-        Source<RealVector> audioSource = define(AudioSource.from(stream, stream.getFormat()));
-        Source<RealValue> randomSource = define(RandomSource.uniform(null));
+        var audioSource = define(AudioSource.from(stream, stream.getFormat()));
+        var randomSource = define(RandomSource.uniform(null));
 
-        DspFilter<RealVector, RealValue> mixer = Mixer.average();
-        DspFilter<RealValue, RealValue> middleAFreqFilter = SecondOrderFilter.bpf(128, 440 * zHertz, zHertz, 0.5);
-        DspSink<RealVector> audioSink = AudioSink.of(stream.getFormat());
+        var mixer = Mixer.average();
+        var middleAFreqFilter = SecondOrderFilter.bpf(128, 440 * zHertz, zHertz, 0.5);
+        var audioSink = AudioSink.of(stream.getFormat());
 
-        Source<RealValue> audioChannel = audioSource.then(mixer);
-        Source<RealValue> randomChannel = randomSource.then(middleAFreqFilter);
+        var audioChannel = audioSource.then(mixer);
+        var randomChannel = randomSource.then(middleAFreqFilter);
 
         join(audioChannel, randomChannel).then(audioSink);
     }

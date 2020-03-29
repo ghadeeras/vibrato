@@ -1,47 +1,52 @@
 package vibrato.complex;
 
+/**
+ * This class is a generic implementation of the Complex interface that works with single complex numbers. The
+ * additional operations in this class should only be used in construction-time, not in processing-time because they
+ * return new instances. They are the functional/non-mutable counter-part of the operations in the interface.
+ */
 public class ComplexNumber implements Complex<ComplexNumber> {
 
-    private double x;
-    private double y;
+    private double real;
+    private double imaginary;
 
     public ComplexNumber() {
         this(0, 0);
     }
 
-    public ComplexNumber(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public ComplexNumber(double real, double imaginary) {
+        this.real = real;
+        this.imaginary = imaginary;
     }
 
-    public static ComplexNumber createXY(double x, double y) {
-        return new ComplexNumber(x, y);
+    public static ComplexNumber createRI(double real, double imaginary) {
+        return new ComplexNumber(real, imaginary);
     }
 
-    public static ComplexNumber createLA(double l, double a) {
-        ComplexNumber complexNumber = new ComplexNumber();
-        return complexNumber.setLA(l, a);
-    }
-
-    @Override
-    public double x() {
-        return x;
+    public static ComplexNumber createLA(double length, double angle) {
+        var complexNumber = new ComplexNumber();
+        return complexNumber.setLA(length, angle);
     }
 
     @Override
-    public double y() {
-        return y;
+    public double real() {
+        return real;
     }
 
     @Override
-    public ComplexNumber setXY(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public double imaginary() {
+        return imaginary;
+    }
+
+    @Override
+    public ComplexNumber setRI(double real, double imaginary) {
+        this.real = real;
+        this.imaginary = imaginary;
         return this;
     }
 
     private ComplexNumber copy() {
-        return new ComplexNumber(x, y);
+        return createRI(real, imaginary);
     }
 
     public ComplexNumber plus(Complex<?> c) {
@@ -57,7 +62,7 @@ public class ComplexNumber implements Complex<ComplexNumber> {
     }
 
     public ComplexNumber conjugate() {
-        return copy().setXY(x, -y);
+        return copy().doConjugate();
     }
 
     public ComplexNumber times(Complex<?> c) {
@@ -82,7 +87,7 @@ public class ComplexNumber implements Complex<ComplexNumber> {
 
     @Override
     public String toString() {
-        return toXYString();
+        return toRIString();
     }
 
 }

@@ -85,7 +85,7 @@ public class FFT {
 
     private void copy(RealVector vector, int count) {
         for (int i = 0; i < count; i++) {
-            input.pointer1.slideTo(i).setXY(vector.value(i), 0);
+            input.pointer1.slideTo(i).setRI(vector.value(i), 0);
         }
     }
 
@@ -97,7 +97,7 @@ public class FFT {
 
     private void resetRemaining(int from) {
         for (int i = from; i < n; i++) {
-            input.pointer1.slideTo(i).setXY(0, 0);
+            input.pointer1.slideTo(i).setRI(0, 0);
         }
     }
 
@@ -105,7 +105,7 @@ public class FFT {
         int j = 0;
         for (int i = n; i < vector.size(); i++) {
             ComplexBuffer.Pointer outputAtJ = input.pointer1.slideTo(j);
-            outputAtJ.setXY(outputAtJ.x() + vector.value(i), 0);
+            outputAtJ.setRI(outputAtJ.real() + vector.value(i), 0);
             if (++j < n) continue;
             j = 0;
         }

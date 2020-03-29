@@ -41,20 +41,20 @@ public class DspUtils {
             if (delta < 0) {
                 result = new ComplexNumber[2];
                 double delta2a = Math.sqrt(-delta) / a2;
-                result[0] = ComplexNumber.createXY(b2a, +delta2a);
-                result[1] = ComplexNumber.createXY(b2a, -delta2a);
+                result[0] = ComplexNumber.createRI(b2a, +delta2a);
+                result[1] = ComplexNumber.createRI(b2a, -delta2a);
             } else if (delta > 0) {
                 result = new ComplexNumber[2];
                 double delta2a = Math.sqrt(delta) / a2;
-                result[0] = ComplexNumber.createXY(b2a + delta2a, 0);
-                result[1] = ComplexNumber.createXY(b2a - delta2a, 0);
+                result[0] = ComplexNumber.createRI(b2a + delta2a, 0);
+                result[1] = ComplexNumber.createRI(b2a - delta2a, 0);
             } else {
                 result = new ComplexNumber[1];
-                result[0] = ComplexNumber.createXY(b2a, 0);
+                result[0] = ComplexNumber.createRI(b2a, 0);
             }
         } else if (b != 0) {
             result = new ComplexNumber[1];
-            result[0] = ComplexNumber.createXY(-c/b, 0);
+            result[0] = ComplexNumber.createRI(-c/b, 0);
         } else if (c != 0) {
             result = new ComplexNumber[0];
         }

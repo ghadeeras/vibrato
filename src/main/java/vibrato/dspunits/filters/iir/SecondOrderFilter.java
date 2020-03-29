@@ -69,9 +69,9 @@ public class SecondOrderFilter extends AbstractIIRFilter {
     }
 
     public static DspFilter<RealValue, RealValue> poleZero(double gain, ComplexNumber pole, ComplexNumber zero) {
-        double b1 = -2 * zero.x() * gain;
+        double b1 = -2 * zero.real() * gain;
         double b2 = +zero.length() * zero.length() * gain;
-        double a1 = +2 * pole.x();
+        double a1 = +2 * pole.real();
         double a2 = -pole.length() * pole.length();
         return new Coefficients(a1, a2, gain, b1, b2);
     }

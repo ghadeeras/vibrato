@@ -65,7 +65,7 @@ public class TestBase {
     }
 
     public Generator<ComplexNumber> complexNumbersXY(Generator<Double> xs, Generator<Double> ys) {
-        return () -> ComplexNumber.createXY(xs.get(), ys.get());
+        return () -> ComplexNumber.createRI(xs.get(), ys.get());
     }
 
     public Generator<ComplexNumber> complexNumberLA(Generator<Double> lengths, Generator<Double> angles) {

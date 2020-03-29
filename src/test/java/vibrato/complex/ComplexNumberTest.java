@@ -10,14 +10,14 @@ import java.util.function.Predicate;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static vibrato.complex.ComplexNumber.createLA;
-import static vibrato.complex.ComplexNumber.createXY;
+import static vibrato.complex.ComplexNumber.createRI;
 
 public class ComplexNumberTest extends TestBase {
 
     private UnaryOperatorTester<ComplexNumber> operatorTester = new UnaryOperatorTester<>(this::complexNumbers, VibratoMatchers::approximatelyEqualTo);
 
-    private ComplexNumber zero = createXY(0, 0);
-    private ComplexNumber one = createXY(1, 0);
+    private ComplexNumber zero = createRI(0, 0);
+    private ComplexNumber one = createRI(1, 0);
 
     private Predicate<ComplexNumber> notZero = not(approximatelyEqualTo(zero))::matches;
 
@@ -32,7 +32,7 @@ public class ComplexNumberTest extends TestBase {
     @Test
     public void test_conjugation() {
         forAnyOf(complexNumbers(), c -> {
-            assertThat(c.times(c.conjugate()), approximatelyEqualTo(createXY(c.length() * c.length(), 0)));
+            assertThat(c.times(c.conjugate()), approximatelyEqualTo(createRI(c.lengthSquared(), 0)));
         });
     }
 
@@ -60,7 +60,7 @@ public class ComplexNumberTest extends TestBase {
     }
 
     @Test
-    public void test_rotation() {
+    public void test_multiplication() {
         forAnyOf(complexNumbers().filter(notZero), c1 -> {
             forAnyOf(complexNumbers().filter(notZero), c2 -> {
                 ComplexNumber c = c1.times(c2);
@@ -70,9 +70,21 @@ public class ComplexNumberTest extends TestBase {
         });
     }
 
+    @Test
+    public void test_rotation() {
+        forAnyOf(complexNumbers().filter(notZero), c -> {
+            forAnyOf(doubles().filter(d -> d != 0), angle -> {
+                ComplexNumber rotated = c.rotated(angle);
+                assertThat(rotated.length(), approximatelyEqualTo(c.length()));
+                assertThat(mod2Pi(rotated.angle()), approximatelyEqualTo(mod2Pi(c.angle() + angle)));
+            });
+        });
+    }
+
     private double mod2Pi(double value) {
         double period = 2 * Math.PI;
-        return (value + period) % period;
+        double mod = (value + period) % period;
+        return mod >= 0 ? mod : mod + period;
     }
 
 }
