@@ -15,18 +15,18 @@ public abstract class DspApp extends DspSystem {
         super(clockSpeed);
     }
 
-    protected static void loop(MasterOscillator oscillator) {
+    public static void loop(MasterOscillator oscillator) {
         System.out.println();
         System.out.println("Press [Enter] to stop.");
         while (!pressedEnter()) {
             long time = System.currentTimeMillis();
             while (System.currentTimeMillis() - time < 100) {
-                oscillator.run(100);
+                oscillator.oscillate(100);
             }
         }
     }
 
-    protected static boolean pressedEnter() {
+    public static boolean pressedEnter() {
         try {
             return System.in.available() > 0;
         } catch (IOException e) {
@@ -34,7 +34,7 @@ public abstract class DspApp extends DspSystem {
         }
     }
 
-    protected static AudioInputStream openAudioInputStream(String[] args) {
+    public static AudioInputStream openAudioInputStream(String... args) {
         if (args.length < 1) {
             return exit("One argument specifying the path to an audi file is required");
         }
@@ -46,7 +46,7 @@ public abstract class DspApp extends DspSystem {
         }
     }
 
-    protected static <T> T exit(String message) {
+    public static <T> T exit(String message) {
         System.out.println(message);
         System.exit(1);
         return null;

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 public class MasterOscillator extends Oscillator {
 
@@ -33,8 +34,16 @@ public class MasterOscillator extends Oscillator {
         }
     }
 
-    public void run(long cycles) {
-        oscillate(cycles);
+    public void spawnOscillationThread(BooleanSupplier terminationCondition) {
+        Thread thread = new Thread(() -> oscillateUntil(terminationCondition));
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public void oscillateUntil(BooleanSupplier terminationCondition) {
+        while (!terminationCondition.getAsBoolean()) {
+            cycle();
+        }
     }
 
     @Override

@@ -54,6 +54,10 @@ public class DspSystem implements DspUnit {
         return define(DspSource.create(RealVector.join(sourceStream.map(source -> source.source.output()).collect(toList()))));
     }
 
+    public static DspFilter<RealValue, RealVector> fork(int channels) {
+        return input -> DspSource.create(input.window(channels));
+    }
+
     protected <I extends RealVector, O extends RealVector> Filter<I, O> define(DspFilter<I, O> filter) {
         return new Filter<>(filter);
     }
@@ -85,8 +89,11 @@ public class DspSystem implements DspUnit {
             return define(filter.apply(this.source.output()));
         }
 
-        public void then(DspSink<O> sink) {
-            connect(sink.apply(this.source.output()));
+        @SafeVarargs
+        public final void then(DspSink<O>... sinks) {
+            for (DspSink<O> sink : sinks) {
+                connect(sink.apply(this.source.output()));
+            }
         }
 
         public Source<RealValue> channel(int index) {
