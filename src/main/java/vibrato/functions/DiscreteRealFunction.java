@@ -90,7 +90,7 @@ public interface DiscreteRealFunction {
 
         @Override
         public double value(int index) {
-            return firstIndexInclusive <= index && index < lastIndexExclusive ? function.apply(index) : 0;
+            return 0 <= index && index < size ? function.apply(firstIndexInclusive + index) : 0;
         }
 
     }

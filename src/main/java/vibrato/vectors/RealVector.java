@@ -55,4 +55,8 @@ public interface RealVector extends DiscreteRealFunction {
         };
     }
 
+    static RealVector window(int size, DiscreteRealFunction function) {
+        return function.window(size);
+    }
+
 }

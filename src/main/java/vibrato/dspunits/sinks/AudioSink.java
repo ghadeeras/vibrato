@@ -24,7 +24,7 @@ public class AudioSink implements DspUnit, State {
 
     private AudioSink(RealVector input, AudioFormat format, OutputStream audioStream) {
         boolean signed = format.getEncoding().equals(Encoding.PCM_SIGNED);
-        int bufferSize = Math.round(format.getFrameSize() * format.getFrameRate());
+        int bufferSize = format.getFrameSize() * Math.round(format.getFrameRate() / 15);
         this.input = input;
         this.format = format;
         this.stream = new BufferedOutputStream(audioStream, bufferSize);

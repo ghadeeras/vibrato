@@ -41,6 +41,9 @@ public class ComplexBuffer {
     private final Buffer realBuffer;
     private final Buffer imaginaryBuffer;
 
+    private final RealVector lengths;
+    private final RealVector angles;
+
     public ComplexBuffer(int size) {
         this.size = size;
 
@@ -49,6 +52,13 @@ public class ComplexBuffer {
 
         realBuffer = new Buffer(realParts);
         imaginaryBuffer = new Buffer(imaginaryParts);
+
+        lengths = RealVector.window(size, i -> length(realParts[i], imaginaryParts[i]));
+        angles = RealVector.window(size, i -> Math.atan2(imaginaryParts[i], realParts[i]));
+    }
+
+    private static double length(double real, double imaginary) {
+        return Math.sqrt(real * real + imaginary * imaginary);
     }
 
     public int size() {
@@ -61,6 +71,14 @@ public class ComplexBuffer {
 
     public RealVector imaginaryParts() {
         return imaginaryBuffer;
+    }
+
+    public RealVector lengthParts() {
+        return lengths;
+    }
+
+    public RealVector angleParts() {
+        return angles;
     }
 
     private void set(int index, double real, double imaginary) {

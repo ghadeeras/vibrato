@@ -5,9 +5,11 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.stage.Stage;
+import vibrato.dspunits.DspSource;
 import vibrato.dspunits.DspSystem;
 import vibrato.dspunits.filters.BufferingWindow;
 import vibrato.dspunits.filters.Mixer;
+import vibrato.dspunits.filters.fourier.FastFourierTransformer;
 import vibrato.dspunits.sinks.AudioSink;
 import vibrato.dspunits.sinks.Oscilloscope;
 import vibrato.dspunits.sources.AudioSource;
@@ -51,12 +53,17 @@ public class PlayToOscilloscope extends Application {
         protected AudioPlayer(AudioInputStream stream, Canvas canvas) {
             super(stream.getFormat().getFrameRate());
             var source = AudioSource.from(stream, stream.getFormat());
+            var fft = FastFourierTransformer.withMinimumSpectrumSize(512);
             define(source)
-                .then(Mixer.average())
                 .then(
-                    define(fork(2)).then(AudioSink.of(stream.getFormat())),
-                    define(BufferingWindow.ofSize(512)).then(Oscilloscope.renderingOn(canvas))
+                    AudioSink.of(stream.getFormat()),
+                    define(Mixer.average())
+                        .then(BufferingWindow.ofSize(512))
+                        .then(fft)
                 );
+            define(fft.length())
+                .then(input -> DspSource.create(input.compressOnYAxis(20).window(256)))
+                .then(Oscilloscope.renderingOn(canvas));
         }
 
     }

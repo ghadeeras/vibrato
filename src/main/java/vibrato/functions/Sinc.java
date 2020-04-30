@@ -2,8 +2,10 @@ package vibrato.functions;
 
 public class Sinc {
 
+    private static final double epsilon = Math.sqrt(Math.nextUp(0f));
+
     public static Signal sinc() {
-        return x -> x != 0 ? calculate(x) : 1;
+        return x -> -epsilon < x && x < epsilon ? 1: calculate(x);
     }
 
     private static double calculate(double x) {
