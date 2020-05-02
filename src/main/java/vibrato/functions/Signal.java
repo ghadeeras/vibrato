@@ -57,11 +57,7 @@ public interface Signal {
     }
 
     default double[] samples(int count, double from, double frequency) {
-        double[] samples = new double[count];
-        for (int i = 0; i < count; i++) {
-            samples[i] = at(from + i / frequency);
-        }
-        return samples;
+        return delay(-from).compress(frequency).discrete().samples(count, 0, 1);
     }
 
 }

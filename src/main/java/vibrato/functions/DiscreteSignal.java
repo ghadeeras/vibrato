@@ -52,8 +52,9 @@ public interface DiscreteSignal {
 
     default double[] samples(int count, int from, int stride) {
         double[] samples = new double[count];
-        for (int i = 0; i < count; i++) {
-            samples[i] = at(from + stride * i);
+        int to = from + stride * count;
+        for (int i = from; i < to; i += stride) {
+            samples[i] = at(i);
         }
         return samples;
     }

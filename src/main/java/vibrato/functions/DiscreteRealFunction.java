@@ -8,6 +8,10 @@ public interface DiscreteRealFunction {
 
     double apply(int i);
 
+    default DiscreteRealFunction then(RealFunction function) {
+        return function.apply(this);
+    }
+
     default DiscreteRealFunction shiftOnXAxis(int shift) {
         return i -> apply(i - shift);
     }
@@ -63,14 +67,10 @@ public interface DiscreteRealFunction {
 
         private final DiscreteRealFunction function;
         private final int size;
-        private final int firstIndexInclusive;
-        private final int lastIndexExclusive;
 
         private Window(DiscreteRealFunction function, int firstIndexInclusive, int lastIndexExclusive) {
-            this.function = function;
+            this.function = function.shiftOnXAxis(-firstIndexInclusive);
             this.size = lastIndexExclusive - firstIndexInclusive;
-            this.firstIndexInclusive = firstIndexInclusive;
-            this.lastIndexExclusive = lastIndexExclusive;
         }
 
         @Override
@@ -79,18 +79,8 @@ public interface DiscreteRealFunction {
         }
 
         @Override
-        public double firstValue() {
-            return function.apply(firstIndexInclusive);
-        }
-
-        @Override
-        public double lastValue() {
-            return function.apply(lastIndexExclusive);
-        }
-
-        @Override
         public double value(int index) {
-            return 0 <= index && index < size ? function.apply(firstIndexInclusive + index) : 0;
+            return 0 <= index && index < size ? function.apply(index) : 0;
         }
 
     }

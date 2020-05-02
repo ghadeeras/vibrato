@@ -23,16 +23,6 @@ public class CircularBuffer extends AbstractDelayLine {
     }
 
     @Override
-    public double firstValue() {
-        return values[firstIndex];
-    }
-
-    @Override
-    public double lastValue() {
-        return values[lastIndex];
-    }
-
-    @Override
     public double value(int index) {
         return values[modSize(firstIndex + index)];
     }

@@ -8,16 +8,6 @@ public interface RealValue extends RealVector {
     }
 
     @Override
-    default double firstValue() {
-        return value();
-    }
-
-    @Override
-    default double lastValue() {
-        return value();
-    }
-
-    @Override
     default double value(int index) {
         return value();
     }

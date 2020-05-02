@@ -7,3 +7,5 @@ It is still in a very early stage of the development process. So bear with me pl
 
 Explore the various packages that comprise the project:
  * [`vibrato.complex`](src/main/java/vibrato/complex/ComplexNumbers.md)
+ * [`vibrato.fourier`](src/main/java/vibrato/fourier/FourierTransforms.md)
+ * [`vibrato.functions`](src/main/java/vibrato/functions/Functions.md)

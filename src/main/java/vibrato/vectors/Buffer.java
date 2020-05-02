@@ -16,16 +16,6 @@ public class Buffer implements RealVector {
     }
 
     @Override
-    public double firstValue() {
-        return values[0];
-    }
-
-    @Override
-    public double lastValue() {
-        return values[lastIndex];
-    }
-
-    @Override
     public double value(int index) {
         return index >= 0 && index <= lastIndex ? values[index] : 0;
     }

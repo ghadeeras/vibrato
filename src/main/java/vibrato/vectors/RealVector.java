@@ -13,14 +13,6 @@ public interface RealVector extends DiscreteRealFunction {
 
     double value(int index);
 
-    default double firstValue() {
-        return value(0);
-    }
-
-    default double lastValue() {
-        return value(size() - 1);
-    }
-
     @Override
     default double apply(int i) {
         return value(i);
@@ -29,9 +21,16 @@ public interface RealVector extends DiscreteRealFunction {
     default String contentAsString() {
         return IntStream.range(0, size())
             .mapToDouble(this::value)
-            .boxed()
-            .map(Object::toString)
+            .mapToObj(Double::toString)
             .collect(joining(", "));
+    }
+
+    static RealVector window(int size, DiscreteRealFunction function) {
+        return function.window(size);
+    }
+
+    static RealVector window(int fromInclusive, int toExclusive, DiscreteRealFunction function) {
+        return function.window(fromInclusive, toExclusive);
     }
 
     static RealVector join(List<RealValue> values) {
@@ -53,10 +52,6 @@ public interface RealVector extends DiscreteRealFunction {
             }
 
         };
-    }
-
-    static RealVector window(int size, DiscreteRealFunction function) {
-        return function.window(size);
     }
 
 }

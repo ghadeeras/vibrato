@@ -5,6 +5,10 @@ import vibrato.complex.ComplexNumber;
 import vibrato.utils.DspUtils;
 import vibrato.vectors.RealVector;
 
+/**
+ * This class implements the Fast Fourier Transform algorithm that transforms signals from their time-domain
+ * representation (real time samples) to their frequency-domain representation (complex frequency samples).
+ */
 public class FFT {
 
     private final int n;
