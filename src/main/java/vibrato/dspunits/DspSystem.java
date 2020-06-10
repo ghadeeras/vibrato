@@ -73,6 +73,10 @@ public class DspSystem implements DspUnit {
         )));
     }
 
+    protected Source<RealValue> constant(double value) {
+        return define(DspSource.create(() -> value));
+    }
+
     protected class Source<O extends RealVector> {
 
         final DspSource<O> source;
@@ -81,17 +85,21 @@ public class DspSystem implements DspUnit {
             this.source = connect(source);
         }
 
-        public <V extends RealVector> Source<V> then(Filter<O, V> filter) {
+        public <V extends RealVector> Source<V> then(Filter<? super O, V> filter) {
             return then(filter.filter);
         }
 
-        public <V extends RealVector> Source<V> then(DspFilter<O, V> filter) {
+        public <V extends RealVector> Source<V> then(DspFilter<? super O, V> filter) {
             return define(filter.apply(this.source.output()));
         }
 
+        public <V extends RealVector, C extends  RealVector> Source<V> then(DspController<C, ? super O, V> controller, Source<C> controlSignal) {
+            return then(controller.apply(controlSignal.source.output()));
+        }
+
         @SafeVarargs
-        public final void then(DspSink<O>... sinks) {
-            for (DspSink<O> sink : sinks) {
+        public final void then(DspSink<? super O>... sinks) {
+            for (DspSink<? super O> sink : sinks) {
                 connect(sink.apply(this.source.output()));
             }
         }
@@ -110,15 +118,19 @@ public class DspSystem implements DspUnit {
             this.filter = filter;
         }
 
-        public <V extends RealVector> Filter<I, V> then(Filter<O, V> filter) {
+        public <V extends RealVector> Filter<I, V> then(Filter<? super O, V> filter) {
             return then(filter.filter);
         }
 
-        public <V extends RealVector> Filter<I, V> then(DspFilter<O, V> filter) {
+        public <V extends RealVector> Filter<I, V> then(DspFilter<? super O, V> filter) {
             return define(this.filter.andThen(DspSystem.this::connect).andThen(DspSource::output).andThen(filter)::apply);
         }
 
-        public DspSink<I> then(DspSink<O> sink) {
+        public <V extends RealVector, C extends  RealVector> Filter<I, V> then(DspController<C, ? super O, V> controller, Source<C> controlSignal) {
+            return then(controller.apply(controlSignal.source.output()));
+        }
+
+        public DspSink<I> then(DspSink<? super O> sink) {
             return filter.andThen(DspSystem.this::connect).andThen(DspSource::output).andThen(sink)::apply;
         }
 

@@ -22,7 +22,7 @@ public interface DiscreteSignal {
         return n -> at(n) / factor;
     }
 
-    default DiscreteSignal magnify(double factor) {
+    default DiscreteSignal amplify(double factor) {
         return n -> at(n) * factor;
     }
 
@@ -53,8 +53,9 @@ public interface DiscreteSignal {
     default double[] samples(int count, int from, int stride) {
         double[] samples = new double[count];
         int to = from + stride * count;
+        int j = 0;
         for (int i = from; i < to; i += stride) {
-            samples[i] = at(i);
+            samples[j++] = at(i);
         }
         return samples;
     }

@@ -3,6 +3,7 @@ package vibrato.fourier;
 import vibrato.complex.ComplexBuffer;
 import vibrato.complex.ComplexNumber;
 import vibrato.utils.DspUtils;
+import vibrato.vectors.Buffer;
 import vibrato.vectors.RealVector;
 
 /**
@@ -222,6 +223,26 @@ public class FFT {
             pointer2.slideTo(index2);
         }
 
+    }
+
+    public static ComplexBuffer fft(double[] wave) {
+        return fft(new Buffer(wave));
+    }
+
+    public static ComplexBuffer fft(RealVector wave) {
+        int waveSize = wave.size();
+        FFT fft = new FFT(waveSize);
+        ComplexBuffer spectrum = new ComplexBuffer(waveSize);
+        fft.transform(wave, spectrum.pointer());
+        return spectrum;
+    }
+
+    public static double[] ifft(ComplexBuffer spectrum) {
+        int waveSize = spectrum.size();
+        IFFT ifft = new IFFT(waveSize);
+        ComplexBuffer complexWave = new ComplexBuffer(waveSize);
+        ifft.transform(spectrum.pointer(), complexWave.pointer());
+        return complexWave.realParts().asSignal().samples(waveSize, 0, 1);
     }
 
 }

@@ -1,6 +1,7 @@
 package vibrato.interpolators;
 
 import vibrato.functions.DiscreteRealFunction;
+import vibrato.vectors.CircularBuffer;
 
 public interface Interpolator {
 
@@ -12,8 +13,19 @@ public interface Interpolator {
         return fraction != 0 ? value(function, (int) i, fraction) : function.apply((int) i);
     }
 
-    Interpolator linear = new LinearInterpolator();
+    default double[] resample(double[] wave, int newSize) {
+        double ratio = wave.length / (double) newSize;
+        double[] newWave = new double[newSize];
+        CircularBuffer buffer = new CircularBuffer(wave);
+        for (int i = 0; i < newSize; i++) {
+            newWave[i] = value(buffer, i * ratio);
+        }
+        return newWave;
+    }
 
+    Interpolator truncating = (function, index, fraction) -> function.apply(index);
+    Interpolator rounding = (function, index, fraction) -> function.apply(index + (int) Math.round(fraction));
+    Interpolator linear = new LinearInterpolator();
     Interpolator cubic = new CubicInterpolator();
 
 }

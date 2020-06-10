@@ -118,7 +118,7 @@ public class FFTTest extends TestBase {
         double factor = doubles().filter(notZero()).get();
 
         DiscreteSignal signal = randomSignal();
-        DiscreteSignal scaledSignal = signal.magnify(factor);
+        DiscreteSignal scaledSignal = signal.amplify(factor);
 
         ComplexBuffer fft = transform(signal);
         ComplexBuffer scaledFFT = transform(scaledSignal);

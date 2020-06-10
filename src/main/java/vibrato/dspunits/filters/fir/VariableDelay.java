@@ -1,5 +1,6 @@
 package vibrato.dspunits.filters.fir;
 
+import vibrato.dspunits.DspController;
 import vibrato.functions.RealFunction;
 import vibrato.interpolators.Interpolator;
 import vibrato.vectors.AbstractDelayLine;
@@ -27,6 +28,14 @@ public class VariableDelay extends AbstractFIRFilter {
     protected RealValue outputValue(RealValue feedback, RealVector state) {
         RealFunction interpolatedState = state.interpolated(interpolator);
         return () -> interpolatedState.apply(-delay.value());
+    }
+
+    public static DspController<RealValue, RealValue, RealValue> ofMax(int maxDelay) {
+        return ofMax(maxDelay, Interpolator.linear);
+    }
+
+    public static DspController<RealValue, RealValue, RealValue> ofMax(int maxDelay, Interpolator interpolator) {
+        return delay -> input -> new VariableDelay(input, maxDelay, delay, interpolator);
     }
 
 }

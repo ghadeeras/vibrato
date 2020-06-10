@@ -28,7 +28,7 @@ public interface Signal {
         return t -> at(t) / factor;
     }
 
-    default Signal magnify(double factor) {
+    default Signal amplify(double factor) {
         return t -> at(t) * factor;
     }
 
