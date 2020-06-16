@@ -3,12 +3,11 @@ package vibrato.vectors;
 import vibrato.complex.ComplexBuffer;
 import vibrato.fourier.FFT;
 import vibrato.fourier.IFFT;
-import vibrato.functions.Linear;
 import vibrato.functions.RealFunction;
 import vibrato.interpolators.Interpolator;
 import vibrato.utils.DspUtils;
 
-import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 public interface WaveTable {
 
@@ -16,30 +15,36 @@ public interface WaveTable {
 
     double sample(double phase, double samplingIncrement, Interpolator interpolator);
 
-    static double[] unBias(double[] wave) {
-        double average = DoubleStream.of(wave).average().orElse(0);
-        return DoubleStream.of(wave).map(v -> v - average).toArray();
+    WaveTable withCachedInterpolation(Interpolator interpolator);
+
+    WaveTable withoutCachedInterpolation();
+
+    double[] baseWave();
+
+    default WaveTable antiAliased() {
+        return new AntiAliased(baseWave());
     }
 
-    static double[] dynamicRange(double min, double max, double[] wave) {
-        double mn = DoubleStream.of(wave).min().orElse(-1);
-        double mx = DoubleStream.of(wave).max().orElse(+1);
-        RealFunction f = Linear.linear(mn, min, mx, max);
-        return DoubleStream.of(wave).map(f::apply).toArray();
+    static WaveTable create(double... wave) {
+        return new Simple(wave);
     }
 
     class AntiAliased implements WaveTable {
 
-        private final CircularBuffer[] waves;
+        private final WaveTable[] waves;
 
-        public AntiAliased(double... wave) {
+        private AntiAliased(WaveTable[] waves) {
+            this.waves = waves;
+        }
+
+        private AntiAliased(double... wave) {
             int levels = DspUtils.bitCount(wave.length - 1);
-            waves = new CircularBuffer[levels - 1];
+            waves = new Simple[levels - 1];
 
             double[] baseWave = baseWave(wave, levels);
-            waves[0] = new CircularBuffer(baseWave);
+            waves[0] = new Simple(baseWave);
 
-            ComplexBuffer spectrum = FFT.fft(waves[0]);
+            ComplexBuffer spectrum = FFT.fft(baseWave);
             double power = power(spectrum);
 
             IFFT ifft = new IFFT(baseWave.length);
@@ -54,7 +59,7 @@ public interface WaveTable {
                 remainingPower -= lpf(spectrum, waveSize);
                 ifft.transform(spectrum.pointer(), complexWave.pointer());
                 double amplification = remainingPower > 0 ? Math.sqrt(power / remainingPower) : 1;
-                waves[i] = new CircularBuffer(complexWave.realParts().asSignal().amplify(amplification).samples(waveSize, 0, stride));
+                waves[i] = new Simple(complexWave.realParts().asSignal().amplify(amplification).samples(waveSize, 0, stride));
             }
         }
 
@@ -92,7 +97,28 @@ public interface WaveTable {
         @Override
         public double sample(double phase, double samplingIncrement, Interpolator interpolator) {
             int level = level(samplingIncrement);
-            return interpolator.value(waves[level], phase / (1 << level));
+            return waves[level].sample(phase / (1 << level), 1, interpolator);
+        }
+
+        @Override
+        public WaveTable withCachedInterpolation(Interpolator interpolator) {
+            WaveTable[] waves = Stream.of(this.waves)
+                .map(waveTable -> waveTable.withCachedInterpolation(interpolator))
+                .toArray(WaveTable[]::new);
+            return new AntiAliased(waves);
+        }
+
+        @Override
+        public WaveTable withoutCachedInterpolation() {
+            WaveTable[] waves = Stream.of(this.waves)
+                .map(WaveTable::withoutCachedInterpolation)
+                .toArray(WaveTable[]::new);
+            return new AntiAliased(waves);
+        }
+
+        @Override
+        public double[] baseWave() {
+            return waves[0].baseWave();
         }
 
         private int level(double samplingIncrement) {
@@ -109,8 +135,12 @@ public interface WaveTable {
 
         private final CircularBuffer wave;
 
-        public Simple(double... wave) {
-            this.wave = new CircularBuffer(wave);
+        private Simple(double... wave) {
+            this(new CircularBuffer(wave));
+        }
+
+        private Simple(CircularBuffer wave) {
+            this.wave = wave;
         }
 
         @Override
@@ -123,6 +153,63 @@ public interface WaveTable {
             return interpolator.value(wave, phase);
         }
 
+        @Override
+        public WaveTable withCachedInterpolation(Interpolator interpolator) {
+            final RealFunction[] interpolations = new RealFunction[size()];
+            for (int i = 0; i < interpolations.length; i++) {
+                interpolations[i] = interpolator.asFunction(wave, i);
+            }
+            return new WithCachedInterpolatorWaveTable(interpolations);
+        }
+
+        @Override
+        public WaveTable withoutCachedInterpolation() {
+            return this;
+        }
+
+        @Override
+        public double[] baseWave() {
+            return wave.asSignal().samples(size(), 0, 1);
+        }
+
+        private static class WithCachedInterpolatorWaveTable implements WaveTable {
+
+            private final RealFunction[] interpolations;
+
+            private WithCachedInterpolatorWaveTable(RealFunction[] interpolations) {
+                this.interpolations = interpolations;
+            }
+
+            @Override
+            public int size() {
+                return interpolations.length;
+            }
+
+            @Override
+            public double sample(double phase, double samplingIncrement, Interpolator interpolator) {
+                double index = Math.floor(phase);
+                double fraction = phase - index;
+                return interpolations[(int) index % interpolations.length].apply(fraction);
+            }
+
+            @Override
+            public WaveTable withCachedInterpolation(Interpolator otherInterpolator) {
+                return withoutCachedInterpolation().withCachedInterpolation(otherInterpolator) ;
+            }
+
+            @Override
+            public WaveTable withoutCachedInterpolation() {
+                return new Simple(baseWave());
+            }
+
+            @Override
+            public double[] baseWave() {
+                return Stream.of(interpolations)
+                    .mapToDouble(interpolation -> interpolation.apply(0))
+                    .toArray();
+            }
+
+        }
     }
 
 }

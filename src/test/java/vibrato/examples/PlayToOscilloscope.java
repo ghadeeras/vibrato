@@ -54,16 +54,16 @@ public class PlayToOscilloscope extends Application {
             super(stream.getFormat().getFrameRate());
             var source = AudioSource.from(stream, stream.getFormat());
             var fft = FastFourierTransformer.withMinimumSpectrumSize(512);
-            define(source)
-                .then(
+            from(source)
+                .into(
                     AudioSink.of(stream.getFormat()),
-                    define(Mixer.average())
-                        .then(BufferingWindow.ofSize(512))
-                        .then(fft)
+                    from(Mixer.average())
+                        .through(BufferingWindow.ofSize(512))
+                        .into(fft)
                 );
-            define(fft.length())
-                .then(input -> DspSource.create(input.compressOnYAxis(20).window(256)))
-                .then(Oscilloscope.renderingOn(canvas));
+            from(fft.length())
+                .through(input -> DspSource.create(input.compressOnYAxis(20).window(256)))
+                .into(Oscilloscope.renderingOn(canvas));
         }
 
     }

@@ -1,6 +1,7 @@
 package vibrato.interpolators;
 
 import vibrato.functions.DiscreteRealFunction;
+import vibrato.functions.RealFunction;
 import vibrato.vectors.CircularBuffer;
 
 public interface Interpolator {
@@ -11,6 +12,10 @@ public interface Interpolator {
         double i = Math.floor(index);
         double fraction = index - i;
         return fraction != 0 ? value(function, (int) i, fraction) : function.apply((int) i);
+    }
+
+    default RealFunction asFunction(DiscreteRealFunction function, int index) {
+        return x -> value(function, index, x);
     }
 
     default double[] resample(double[] wave, int newSize) {
