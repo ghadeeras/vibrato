@@ -32,7 +32,7 @@ public class WaveOscillator implements DspSource<RealValue>, State {
         this.waveTable = waveTable;
         this.interpolator = interpolator;
         this.baseWaveSize = this.waveTable.size();
-        this.baseFrequency = 2 * Math.PI / baseWaveSize;
+        this.baseFrequency = 1 / baseWaveSize;
 
         this.outputValue = () -> output;
 

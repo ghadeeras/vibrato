@@ -13,16 +13,20 @@ import static java.util.stream.Collectors.toList;
 
 public class CompositeUnit implements DspUnit {
 
+    public static final int speedOfSound = 343;
+
     protected final double clockSpeed;
     protected final double zHertz;
     protected final double zSecond;
+    protected final double zMeters;
 
     private final List<Operation> operations = new ArrayList<>();
 
     protected CompositeUnit(double clockSpeed) {
         this.clockSpeed = clockSpeed;
-        this.zHertz = 2 * Math.PI / clockSpeed;
+        this.zHertz = 1 / clockSpeed;
         this.zSecond = 1 / zHertz;
+        this.zMeters = clockSpeed / speedOfSound;
     }
 
     private <U extends DspUnit> U connect(U unit) {
@@ -74,7 +78,7 @@ public class CompositeUnit implements DspUnit {
             return from(filter.apply(this.source.output()));
         }
 
-        public <V extends RealVector, C extends  RealVector> Source<V> through(DspController<C, ? super O, V> controller, Source<C> controlSignal) {
+        public <V extends RealVector, C extends RealVector> Source<V> through(DspController<C, ? super O, V> controller, Source<? extends C> controlSignal) {
             return through(controller.apply(controlSignal.source.output()));
         }
 

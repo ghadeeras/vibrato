@@ -7,6 +7,7 @@ import vibrato.utils.FixedPointSample;
 import vibrato.vectors.RealVector;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 
@@ -47,6 +48,10 @@ public class AudioSource implements State {
         for (int i = 0; i < frame.length; i++) {
             frame[i] = sample.read(stream);
         }
+    }
+
+    public static DspSource<RealVector> from(AudioInputStream audioStream) {
+        return from(audioStream, audioStream.getFormat());
     }
 
     public static DspSource<RealVector> from(InputStream audioStream, AudioFormat format) {

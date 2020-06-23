@@ -18,6 +18,26 @@ public interface RealVector extends DiscreteRealFunction {
         return value(i);
     }
 
+    default double dotProduct(RealVector vector) {
+        return dotProduct(vector, Math.min(size(), vector.size()));
+    }
+
+    default double dotProduct(RealVector vector, int size) {
+        double result = 0;
+        for (int i = 0; i < size; i++) {
+            result += value(i) * vector.value(i);
+        }
+        return result;
+    }
+
+    default double lengthSquared() {
+        return dotProduct(this, size());
+    }
+
+    default double length() {
+        return Math.sqrt(lengthSquared());
+    }
+
     default String contentAsString() {
         return IntStream.range(0, size())
             .mapToDouble(this::value)

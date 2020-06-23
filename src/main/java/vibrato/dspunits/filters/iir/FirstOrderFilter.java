@@ -70,14 +70,14 @@ public class FirstOrderFilter extends AbstractIIRFilter {
     }
 
     public static DspFilter<RealValue, RealValue> lpf(double constantGain, double cutOffFrequency, double cutOffGain) {
-        double alpha = Math.tan(cutOffFrequency / 2) * cutOffGain / Math.sqrt(1 - cutOffGain * cutOffGain);
+        double alpha = Math.tan(Math.PI * cutOffFrequency) * cutOffGain / Math.sqrt(1 - cutOffGain * cutOffGain);
         double pole = (1 - alpha) / (1 + alpha);
         double gain = constantGain * (1 - pole) / 2;
         return poleZero(gain, pole, -1);
     }
 
     public static DspFilter<RealValue, RealValue> hpf(double constantGain, double cutOffFrequency, double cutOffGain) {
-        double alpha = Math.tan(cutOffFrequency / 2) * Math.sqrt(1 - cutOffGain*cutOffGain) / cutOffGain;
+        double alpha = Math.tan(Math.PI * cutOffFrequency) * Math.sqrt(1 - cutOffGain*cutOffGain) / cutOffGain;
         double pole = (1 - alpha) / (1 + alpha);
         double gain = constantGain * (1 + pole) / 2;
         return poleZero(gain, pole, 1);

@@ -77,26 +77,26 @@ public class SecondOrderFilter extends AbstractIIRFilter {
     }
 
     public static DspFilter<RealValue, RealValue> notchFilter(double constantGain, double frequency, double bandWidth, double cutOffGain) {
-        double beta = Math.tan(bandWidth / 2) * Math.sqrt(1 - cutOffGain * cutOffGain) / cutOffGain;
+        double beta = Math.tan(Math.PI * bandWidth) * Math.sqrt(1 - cutOffGain * cutOffGain) / cutOffGain;
         double b = 1 / (1 + beta);
         double b0 = constantGain * b;
-        double b1 = -2 * b0 * Math.cos(frequency);
-        double a1 = +2 * b * Math.cos(frequency);
+        double b1 = -2 * b0 * Math.cos(2 * Math.PI * frequency);
+        double a1 = +2 * b * Math.cos(2 * Math.PI * frequency);
         double a2 = (1 - 2 * b);
         return new Coefficients(a1, a2, b0, b1, b0);
     }
 
     public static DspFilter<RealValue, RealValue> bpf(double constantGain, double frequency, double bandWidth, double cutOffGain) {
-        double beta = Math.tan(bandWidth/2) * cutOffGain / Math.sqrt(1 - cutOffGain * cutOffGain);
+        double beta = Math.tan(Math.PI * bandWidth) * cutOffGain / Math.sqrt(1 - cutOffGain * cutOffGain);
         double b = 1 / (1 + beta);
         double b0 = constantGain * (1 - b);
-        double a1 = +2 * b * Math.cos(frequency);
+        double a1 = +2 * b * Math.cos(2 * Math.PI * frequency);
         double a2 = (1 - 2 * b);
         return new Coefficients(a1, a2, b0, 0, -b0);
     }
 
     public static DspFilter<RealValue, RealValue> lpf(double constantGain, double cutOffFrequency, double cutOffGain) {
-        double omega1 = Math.tan(cutOffFrequency / 2);
+        double omega1 = Math.tan(Math.PI * cutOffFrequency);
         double omega2 = omega1 * omega1;
         double d = 1 + omega1 / cutOffGain + omega2;
         double gain = constantGain * omega2 / d;
@@ -106,7 +106,7 @@ public class SecondOrderFilter extends AbstractIIRFilter {
     }
 
     public static DspFilter<RealValue, RealValue> hpf(double constantGain, double cutOffFrequency, double cutOffGain) {
-        double omega1 = 1 / Math.tan(cutOffFrequency / 2);
+        double omega1 = 1 / Math.tan(Math.PI * cutOffFrequency);
         double omega2 = omega1 * omega1;
         double d = 1 + omega1 / cutOffGain + omega2;
         double gain = constantGain * omega2 / d;

@@ -1,6 +1,7 @@
 package vibrato.dspunits.filters;
 
 import vibrato.dspunits.DspSource;
+import vibrato.functions.DiscreteRealFunction;
 import vibrato.oscillators.Operation;
 import vibrato.vectors.RealVector;
 
@@ -12,6 +13,10 @@ public class Line implements DspSource<RealVector>, RealVector {
     private final Conductivity conductivity;
 
     private final double[] output;
+
+    public Line(int size, DiscreteRealFunction input) {
+        this(RealVector.window(size, input));
+    }
 
     public Line(RealVector input) {
         this.input = input;
