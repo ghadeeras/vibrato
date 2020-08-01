@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
 group 'dream'
@@ -9,6 +10,11 @@ sourceCompatibility = 11
 
 repositories {
     mavenCentral()
+}
+
+javafx {
+    version = "14"
+    modules = [ 'javafx.graphics' ]
 }
 
 dependencies {
