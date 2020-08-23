@@ -2,6 +2,7 @@ package vibrato.dspunits;
 
 import vibrato.dspunits.filters.Line;
 import vibrato.dspunits.filters.Wire;
+import vibrato.dspunits.filters.fir.AbstractFIRFilter;
 import vibrato.functions.Linear;
 import vibrato.functions.RealFunction;
 import vibrato.vectors.Buffer;
@@ -36,6 +37,10 @@ public class DspSystem extends CompositeUnit {
     protected final Filter<RealValue, RealValue> scalarMultiplication(double factor) {
         return scalarFunction(Linear.linear(factor));
     }
+
+    protected final Filter<RealValue, RealValue> diff = from(AbstractFIRFilter.create(1,
+        (input, delay) -> input - delay.value(-1)
+    ));
 
     protected final Filter<RealValue, RealValue> scalarSquareRoot = scalarFunction(Math::sqrt);
     protected final DspController<RealValue, RealValue, RealValue> scalarMultiplication = control -> input -> new Wire(() -> control.value() * input.value());

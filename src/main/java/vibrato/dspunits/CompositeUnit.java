@@ -15,10 +15,10 @@ public class CompositeUnit implements DspUnit {
 
     public static final int speedOfSound = 343;
 
-    protected final double clockSpeed;
-    protected final double zHertz;
-    protected final double zSecond;
-    protected final double zMeters;
+    public final double clockSpeed;
+    public final double zHertz;
+    public final double zSecond;
+    public final double zMeters;
 
     private final List<Operation> operations = new ArrayList<>();
 
@@ -91,6 +91,10 @@ public class CompositeUnit implements DspUnit {
 
         public Source<RealValue> channel(int index) {
             return from(DspSource.create(source.output().valueAt(index)));
+        }
+
+        public O output() {
+            return source.output();
         }
 
     }

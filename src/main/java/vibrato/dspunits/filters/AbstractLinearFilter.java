@@ -1,5 +1,6 @@
 package vibrato.dspunits.filters;
 
+import vibrato.dspunits.DspFilter;
 import vibrato.dspunits.DspSource;
 import vibrato.oscillators.Operation;
 import vibrato.vectors.*;
@@ -43,6 +44,34 @@ public abstract class AbstractLinearFilter implements DspSource<RealValue>, Real
     @Override
     public RealValue output() {
         return output;
+    }
+
+    public static DspFilter<RealValue, RealValue> create(int order, FeedbackFunction feedbackFunction, OutputFunction outputFunction) {
+        return input -> new AbstractLinearFilter(input, order) {
+
+            @Override
+            protected RealValue inputPlusFeedbackValue(RealValue input, RealVector state) {
+                return () -> feedbackFunction.inputPlusFeedbackValue(input.value(), state);
+            }
+
+            @Override
+            protected RealValue outputValue(RealValue feedback, RealVector state) {
+                return () -> outputFunction.outputValue(feedback.value(), state);
+            }
+
+        };
+    }
+
+    public interface FeedbackFunction {
+
+        double inputPlusFeedbackValue(double input, RealVector state);
+
+    }
+
+    public interface OutputFunction {
+
+        double outputValue(double feedback, RealVector state);
+
     }
 
 }

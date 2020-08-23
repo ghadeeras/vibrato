@@ -1,5 +1,6 @@
 package vibrato.dspunits.filters.fir;
 
+import vibrato.dspunits.DspFilter;
 import vibrato.dspunits.filters.AbstractLinearFilter;
 import vibrato.vectors.AbstractDelayLine;
 import vibrato.vectors.RealValue;
@@ -18,6 +19,17 @@ public abstract class AbstractFIRFilter extends AbstractLinearFilter {
     @Override
     protected RealValue inputPlusFeedbackValue(RealValue input, RealVector state) {
         return input;
+    }
+
+    public static DspFilter<RealValue, RealValue> create(int order, OutputFunction outputFunction) {
+        return input -> new AbstractFIRFilter(input, order) {
+
+            @Override
+            protected RealValue outputValue(RealValue feedback, RealVector state) {
+                return () -> outputFunction.outputValue(feedback.value(), state);
+            }
+
+        };
     }
 
 }

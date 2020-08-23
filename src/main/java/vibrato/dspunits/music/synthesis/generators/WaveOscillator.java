@@ -1,4 +1,4 @@
-package vibrato.dspunits.filters;
+package vibrato.dspunits.music.synthesis.generators;
 
 import vibrato.dspunits.DspFilter;
 import vibrato.dspunits.DspSource;
@@ -6,7 +6,6 @@ import vibrato.interpolators.Interpolator;
 import vibrato.oscillators.Operation;
 import vibrato.oscillators.State;
 import vibrato.vectors.RealValue;
-import vibrato.vectors.WaveTable;
 
 import static vibrato.dspunits.DspUnit.ops;
 

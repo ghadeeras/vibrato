@@ -31,7 +31,7 @@ public class FIRFilter extends AbstractFIRFilter {
         };
     }
 
-    DspFilter<RealValue, RealValue> withImpulseResponse(RealVector impulseResponse) {
+    public static DspFilter<RealValue, RealValue> withImpulseResponse(RealVector impulseResponse) {
         return input -> new FIRFilter(input, impulseResponse.size() - 1, impulseResponse.asSignal());
     }
 

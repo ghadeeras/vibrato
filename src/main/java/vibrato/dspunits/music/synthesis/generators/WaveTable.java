@@ -1,4 +1,4 @@
-package vibrato.vectors;
+package vibrato.dspunits.music.synthesis.generators;
 
 import vibrato.complex.ComplexBuffer;
 import vibrato.fourier.FFT;
@@ -6,6 +6,7 @@ import vibrato.fourier.IFFT;
 import vibrato.functions.RealFunction;
 import vibrato.interpolators.Interpolator;
 import vibrato.utils.DspUtils;
+import vibrato.vectors.CircularBuffer;
 
 import java.util.stream.Stream;
 
