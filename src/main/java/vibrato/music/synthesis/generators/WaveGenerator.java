@@ -1,4 +1,4 @@
-package vibrato.dspunits.music.synthesis.generators;
+package vibrato.music.synthesis.generators;
 
 import vibrato.dspunits.DspController;
 import vibrato.dspunits.DspSource;

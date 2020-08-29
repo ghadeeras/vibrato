@@ -3,34 +3,6 @@ package vibrato.complex;
 import vibrato.vectors.Buffer;
 import vibrato.vectors.RealVector;
 
-/**
- * This class allows manipulating an array of complex numbers. Usually a process manipulates a limited number of complex
- * numbers at a time. So, it could create a minimal number of Pointer objects into the complex buffer, and slides these
- * pointer along the length of the buffer. These pointers will represent the complex numbers they point to.
- *
- * Say you have to implement an operation that reverses the order of complex numbers in a buffer. This can be one as
- * follows:
- * <pre>{@code
- *  Runnable reverserOf(ComplexBuffer buffer) {
- *      // Construction-time
- *      ComplexNumber c = new ComplexNumber();
- *      ComplexBuffer.Pointer p1 = buffer.pointer();
- *      ComplexBuffer.Pointer p2 = buffer.pointer();
- *      return () -> {
- *          // Processing-time
- *          for (int i = 0; i < buffer.size() / 2; i++) {
- *              p1.slideTo(i);
- *              p2.slideTo(buffer.size() - 1 - i);
- *              c.set(p1);
- *              p1.set(p2);
- *              p2.set(c);
- *          }
- *      }
- *  }
- * }</pre>
- * Notice that every time the Runnable returned by reverserOf() runs no instantiation of new complex numbers or pointers
- * happen as they were pre-instantiated when constructing the runnable.
- */
 public class ComplexBuffer {
 
     private final int size;

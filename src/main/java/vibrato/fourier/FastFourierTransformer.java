@@ -1,4 +1,4 @@
-package vibrato.dspunits.filters.fourier;
+package vibrato.fourier;
 
 import vibrato.complex.ComplexBuffer;
 import vibrato.dspunits.DspSink;
@@ -6,7 +6,6 @@ import vibrato.dspunits.DspSource;
 import vibrato.dspunits.DspUnit;
 import vibrato.dspunits.filters.Conductivity;
 import vibrato.dspunits.filters.Line;
-import vibrato.fourier.FFT;
 import vibrato.vectors.RealVector;
 
 public class FastFourierTransformer implements DspSink<RealVector> {

@@ -1,35 +1,5 @@
 package vibrato.complex;
 
-/**
- * Implementors of this interface are representations of complex numbers and the main operations that apply to them.
- * <p/>
- * In order to avoid the performance cost of instantiating and garbage-collecting complex numbers, a mutable interface
- * is favoured. The design assumes that all the needed instances of complex numbers are created at construction-time
- * only, and that its functions operate on these instances by mutating them, not by creating new instances, making them
- * efficient at processing-time.
- * <p/>
- * The generic type is only meant to allow the return types of the operations to be of the same type as the classes that
- * implement this class, instead of being of the abstract interface type. Say you want to create your own implementation
- * (MyComplexNumber) you would define t as follows:
- * <pre>{@code
- *  class MyComplexNumber implements Complex<MyComplexNumber> {
- *      ...
- *      double myOwnOperation(): double
- *  }
- * }</pre>
- * This allows you to chain method calls without losing access to specialized operations that you add in your
- * implementation:
- * <pre>{@code
- *  MyComplexNumber c = ...
- *  double result = c
- *      .rotate(Math.Pi / 6)
- *      .scale(2)
- *      .myOwnOperation(); // This would not work if rotate() and scale() returned just a Complex.
- * }</pre>
- * <b>Important Note</b>: All operations that return a complex number in this interface are expected to be identity
- * functions, returning the same instance that is operated on.
- * @param <C> the implementor type
- */
 public interface Complex<C extends Complex<?>> {
 
     double real();

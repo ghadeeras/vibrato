@@ -2,15 +2,17 @@
 The `vibrato.fourier` package contains the classes that transform a "windowed signal" from/to its discrete time-domain 
 representation (real time samples) to/from its discrete frequency-domain representation (complex frequency samples).
 
-There are two main classes in this package:
+There are three main classes in this package:
 
  * [`FFT`](FFT.java): Transforms a signal (supplied as a `RealVector` or `ComplexBuffer.Pointer`) from time-domain to 
  frequency-domain. It outputs the frequency samples into another `ComplexBuffer`.  
  * [`IFFT`](IFFT.java): Transforms a signal (supplied as a `ComplexBuffer.Pointer`) from frequency-domain to 
  time-domain. It outputs the time samples into another `ComplexBuffer`.
+ * [`FastFourierTransformer`](FastFourierTransformer.java): This is the DSP unit which performs FFT on input signals, 
+ and which could be added to a DSP system.
  
-For both classes, the constructor takes the minimum number of time/frequency samples. The actual number of samples is 
-the nearest higher power of two.     
+For all these classes, the constructors/factory methods take the minimum number of time/frequency samples. The actual 
+number of samples is the nearest higher power of two.     
 
 Example:
 ```java

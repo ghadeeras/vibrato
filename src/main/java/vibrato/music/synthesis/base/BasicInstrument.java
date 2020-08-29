@@ -1,12 +1,12 @@
-package vibrato.dspunits.music.synthesis.base;
+package vibrato.music.synthesis.base;
 
 import vibrato.dspunits.DspController;
 import vibrato.dspunits.DspSource;
 import vibrato.dspunits.DspSystem;
 import vibrato.dspunits.filters.fir.AbstractFIRFilter;
-import vibrato.dspunits.music.synthesis.generators.WaveGenerator;
-import vibrato.dspunits.music.synthesis.generators.WaveOscillator;
-import vibrato.dspunits.music.synthesis.generators.WaveTable;
+import vibrato.music.synthesis.generators.WaveGenerator;
+import vibrato.music.synthesis.generators.WaveOscillator;
+import vibrato.music.synthesis.generators.WaveTable;
 import vibrato.functions.Signal;
 import vibrato.vectors.RealValue;
 

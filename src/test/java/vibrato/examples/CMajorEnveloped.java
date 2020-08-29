@@ -1,9 +1,9 @@
 package vibrato.examples;
 
-import vibrato.dspunits.music.synthesis.base.BasicInstrument;
-import vibrato.dspunits.music.synthesis.generators.WaveGenerator;
-import vibrato.dspunits.music.synthesis.generators.WaveOscillator;
-import vibrato.dspunits.music.synthesis.generators.WaveTable;
+import vibrato.music.synthesis.base.BasicInstrument;
+import vibrato.music.synthesis.generators.WaveGenerator;
+import vibrato.music.synthesis.generators.WaveOscillator;
+import vibrato.music.synthesis.generators.WaveTable;
 import vibrato.dspunits.sinks.AudioSink;
 import vibrato.functions.Curve;
 import vibrato.functions.Linear;

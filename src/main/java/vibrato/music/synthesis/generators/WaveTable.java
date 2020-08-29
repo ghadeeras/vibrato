@@ -1,4 +1,4 @@
-package vibrato.dspunits.music.synthesis.generators;
+package vibrato.music.synthesis.generators;
 
 import vibrato.complex.ComplexBuffer;
 import vibrato.fourier.FFT;

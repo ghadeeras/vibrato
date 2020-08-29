@@ -9,7 +9,7 @@ import vibrato.dspunits.DspSource;
 import vibrato.dspunits.DspSystem;
 import vibrato.dspunits.filters.BufferingWindow;
 import vibrato.dspunits.filters.Mixer;
-import vibrato.dspunits.filters.fourier.FastFourierTransformer;
+import vibrato.fourier.FastFourierTransformer;
 import vibrato.dspunits.sinks.AudioSink;
 import vibrato.dspunits.sinks.Oscilloscope;
 import vibrato.dspunits.sources.AudioSource;

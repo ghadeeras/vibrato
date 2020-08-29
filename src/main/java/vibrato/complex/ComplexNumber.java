@@ -1,10 +1,5 @@
 package vibrato.complex;
 
-/**
- * This class is a generic implementation of the Complex interface that works with single complex numbers. The
- * additional operations in this class should only be used in construction-time, not in processing-time because they
- * return new instances. They are the functional/non-mutable counter-part of the operations in the interface.
- */
 public class ComplexNumber implements Complex<ComplexNumber> {
 
     private double real;

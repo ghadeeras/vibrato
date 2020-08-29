@@ -1,12 +1,12 @@
 package vibrato.examples;
 
-import vibrato.dspunits.music.synthesis.generators.WaveOscillator;
+import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.dspunits.filters.fir.VariableDelay;
 import vibrato.dspunits.sinks.AudioSink;
 import vibrato.functions.Linear;
 import vibrato.interpolators.Interpolator;
 import vibrato.oscillators.MasterOscillator;
-import vibrato.dspunits.music.synthesis.generators.WaveTable;
+import vibrato.music.synthesis.generators.WaveTable;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Random;
