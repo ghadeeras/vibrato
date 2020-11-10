@@ -1,23 +1,21 @@
 package vibrato.examples;
 
-import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.dspunits.filters.fir.VariableDelay;
 import vibrato.dspunits.sinks.AudioSink;
 import vibrato.functions.Linear;
 import vibrato.interpolators.Interpolator;
-import vibrato.oscillators.MasterOscillator;
+import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.music.synthesis.generators.WaveTable;
+import vibrato.oscillators.MasterOscillator;
 
 import javax.sound.sampled.AudioFormat;
-import java.util.Random;
-import java.util.stream.DoubleStream;
 
 public class Doppler extends DspApp {
 
     protected Doppler(AudioFormat audioFormat) {
         super(audioFormat.getFrameRate());
 
-        var sound = WaveTable.create(randomSamples(-0.5, +0.5).limit(16).toArray()).withCachedInterpolation(Interpolator.cubic);
+        var sound = WaveTable.create(randomSamples(-0.5, +0.5, 16)).withCachedInterpolation(Interpolator.cubic);
         var audioSource = scalarConstant(220 * zHertz).through(WaveOscillator.from(sound));
 
         var xs = WaveTable.create(8, 0, -8, 0).withCachedInterpolation(Interpolator.cubic);
@@ -50,10 +48,6 @@ public class Doppler extends DspApp {
             perceivedAudio.through(scalarMultiplication, leftChannelWeight),
             perceivedAudio.through(scalarMultiplication, rightChannelWeight)
         ).into(audioSink);
-    }
-
-    private DoubleStream randomSamples(double min, double max) {
-        return new Random(getClass().getSimpleName().hashCode()).doubles(min, max);
     }
 
     public static void main(String[] args) {

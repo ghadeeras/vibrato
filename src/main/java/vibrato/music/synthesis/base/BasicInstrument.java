@@ -38,8 +38,7 @@ public class BasicInstrument extends DspSystem implements DspSource<RealValue> {
 
         this.source = waveSource
             .through(scalarMultiplication, attackSource)
-            .through(scalarMultiplication, attenuationSource)
-            .through(scalarMultiplication, attackSpeedSource);
+            .through(scalarMultiplication, attenuationSource);
     }
 
     @Override

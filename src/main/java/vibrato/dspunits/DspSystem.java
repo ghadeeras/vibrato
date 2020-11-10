@@ -5,11 +5,14 @@ import vibrato.dspunits.filters.Wire;
 import vibrato.dspunits.filters.fir.AbstractFIRFilter;
 import vibrato.functions.Linear;
 import vibrato.functions.RealFunction;
+import vibrato.interpolators.Interpolator;
+import vibrato.music.synthesis.generators.WaveTable;
 import vibrato.vectors.Buffer;
 import vibrato.vectors.RealValue;
 import vibrato.vectors.RealVector;
 
 import java.util.List;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -43,8 +46,13 @@ public class DspSystem extends CompositeUnit {
     ));
 
     protected final Filter<RealValue, RealValue> scalarSquareRoot = scalarFunction(Math::sqrt);
+    protected final DspController<RealValue, RealValue, RealValue> scalarAddition = control -> input -> new Wire(() -> control.value() + input.value());
     protected final DspController<RealValue, RealValue, RealValue> scalarMultiplication = control -> input -> new Wire(() -> control.value() * input.value());
     protected final DspController<RealValue, RealValue, RealValue> scalarDivision = control -> input -> new Wire(() -> input.value() / control.value());
+
+    protected final DspController<RealValue, RealValue, RealValue> amplitudeModulation(double index) {
+        return modulatingControl -> carrierInput -> new Wire(() -> (index * modulatingControl.value() + 1) * carrierInput.value());
+    }
 
     protected final Filter<RealVector, RealValue> vectorLengthSquared = from(input -> new Wire(input::lengthSquared));
     protected final Filter<RealVector, RealValue> vectorLength =  from(input -> new Wire(input::length));
@@ -54,5 +62,14 @@ public class DspSystem extends CompositeUnit {
         var vector = new Buffer(components);
         return from(input -> new Wire(() -> vector.dotProduct(input, components.length)));
     }
+
+    private static final int sineResolution = 8;
+    protected static final WaveTable sineLikeWave = WaveTable.create(
+        DoubleStream
+            .iterate(0, d -> d + 1)
+            .map(d -> Math.sin(d * 2 * Math.PI / sineResolution))
+            .limit(sineResolution)
+            .toArray()
+    ).withCachedInterpolation(Interpolator.cubic);
 
 }

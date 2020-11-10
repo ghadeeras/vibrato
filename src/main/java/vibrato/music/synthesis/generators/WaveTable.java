@@ -190,7 +190,8 @@ public interface WaveTable {
             public double sample(double phase, double samplingIncrement, Interpolator interpolator) {
                 double index = Math.floor(phase);
                 double fraction = phase - index;
-                return interpolations[(int) index % interpolations.length].apply(fraction);
+                int i = (int) index % interpolations.length;
+                return interpolations[i >= 0 ? i : i + interpolations.length].apply(fraction);
             }
 
             @Override

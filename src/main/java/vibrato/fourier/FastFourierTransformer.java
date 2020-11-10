@@ -40,7 +40,7 @@ public class FastFourierTransformer implements DspSink<RealVector> {
     }
 
     private RealVector wrap(RealVector parts) {
-        return RealVector.window(parts.size(), i -> {
+        return RealVector.window(parts.size() / 2, i -> {
             conductivity.conduct();
             return parts.apply(i);
         });

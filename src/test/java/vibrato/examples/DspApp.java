@@ -1,6 +1,8 @@
 package vibrato.examples;
 
 import vibrato.dspunits.DspSystem;
+import vibrato.functions.Linear;
+import vibrato.functions.RealFunction;
 import vibrato.oscillators.MasterOscillator;
 
 import javax.sound.sampled.AudioInputStream;
@@ -8,6 +10,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
+import java.util.stream.DoubleStream;
 
 public abstract class DspApp extends DspSystem {
 
@@ -50,6 +54,25 @@ public abstract class DspApp extends DspSystem {
         System.out.println(message);
         System.exit(1);
         return null;
+    }
+
+    protected double[] randomSamples(double min, double max, int count) {
+        return dynamicRange(min, max, randomSamples(count));
+    }
+
+    private double[] randomSamples(int count) {
+        return new Random(sameSeed()).doubles(count).toArray();
+    }
+
+    protected long sameSeed() {
+        return getClass().getSimpleName().hashCode();
+    }
+
+    private static double[] dynamicRange(double min, double max, double[] wave) {
+        double mn = DoubleStream.of(wave).min().orElse(-1);
+        double mx = DoubleStream.of(wave).max().orElse(+1);
+        RealFunction f = Linear.linear(mn, min, mx, max);
+        return DoubleStream.of(wave).map(f::apply).toArray();
     }
 
 }

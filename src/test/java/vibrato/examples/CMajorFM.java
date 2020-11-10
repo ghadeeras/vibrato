@@ -4,7 +4,7 @@ import vibrato.dspunits.sinks.AudioSink;
 import vibrato.functions.Curve;
 import vibrato.functions.Pulse;
 import vibrato.interpolators.Interpolator;
-import vibrato.music.synthesis.base.BasicInstrument;
+import vibrato.music.synthesis.base.BasicFMInstrument;
 import vibrato.music.synthesis.generators.WaveGenerator;
 import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.music.synthesis.generators.WaveTable;
@@ -13,18 +13,15 @@ import vibrato.oscillators.MasterOscillator;
 import javax.sound.sampled.AudioFormat;
 import java.util.stream.DoubleStream;
 
-public class CMajorEnveloped extends DspApp {
+public class CMajorFM extends DspApp {
 
-    public CMajorEnveloped(AudioFormat audioFormat) {
+    public CMajorFM(AudioFormat audioFormat) {
         super(audioFormat.getFrameRate());
 
         var scaleFrequencies = WaveTable.create(DoubleStream.of(
             261.64, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.24,
             523.26, 493.88, 440.00, 392.00, 349.23, 329.63, 293.66, 261.62
         ).map(freq -> freq * zHertz).toArray());
-        var instrumentWave = WaveTable.create(randomSamples(-0.5, +0.5, 16))
-            .antiAliased()
-            .withCachedInterpolation(Interpolator.cubic);
         var attackEnvelope = Curve
             .from(0 * zSecond, 0, 0)
             .to(0.03 * zSecond, 1, 0)
@@ -42,7 +39,7 @@ public class CMajorEnveloped extends DspApp {
 
         var vibratoPlayer = WaveOscillator.from(sineLikeWave);
         var notePlayer = WaveOscillator.from(scaleFrequencies, Interpolator.truncating);
-        var instrument = BasicInstrument.define(instrumentWave, attackEnvelope, muteEnvelope);
+        var instrument = BasicFMInstrument.define(sineLikeWave, sineLikeWave,1d/5d, 0.5, attackEnvelope, muteEnvelope);
 
         var vibratoSource = scalarConstant(6 * zHertz)
             .through(vibratoPlayer);
@@ -60,7 +57,7 @@ public class CMajorEnveloped extends DspApp {
 
     public static void main(String[] args) {
         var audioFormat = new AudioFormat(44100, 16, 1, true, false);
-        var cMajor = new CMajorEnveloped(audioFormat);
+        var cMajor = new CMajorFM(audioFormat);
         var oscillator = new MasterOscillator(audioFormat.getFrameRate());
         cMajor.connectTo(oscillator);
 

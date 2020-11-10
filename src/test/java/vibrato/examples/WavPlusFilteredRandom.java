@@ -15,7 +15,7 @@ public class WavPlusFilteredRandom extends DspApp {
         super(stream.getFormat().getFrameRate());
 
         var audioSource = from(AudioSource.from(stream, stream.getFormat()));
-        var randomSource = from(RandomSource.uniform(null));
+        var randomSource = from(RandomSource.uniform(sameSeed()));
 
         var mixer = Mixer.average();
         var middleAFreqFilter = SecondOrderFilter.bpf(128, 440 * zHertz, zHertz, 0.5);
