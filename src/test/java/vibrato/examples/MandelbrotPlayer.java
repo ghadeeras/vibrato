@@ -41,11 +41,11 @@ public class MandelbrotPlayer extends DspApp {
         var tempoSource = scalarConstant(2 * zHertz / xs.size());
 
         var source = join(
-            tempoSource.through(WaveOscillator.from(xs, Interpolator.truncating)),
-            tempoSource.through(WaveOscillator.from(ys, Interpolator.truncating))
+            tempoSource.through(WaveOscillator.create(xs, Interpolator.truncating)),
+            tempoSource.through(WaveOscillator.create(ys, Interpolator.truncating))
         );
         var lpf = SecondOrderFilter.lpf(1, 2000 * zHertz, 0.5);
-        var audioSink = AudioSink.of(new AudioFormat(clockSpeed, 16, 2, true, false));
+        var audioSink = AudioSink.create(new AudioFormat(clockSpeed, 16, 2, true, false));
 
         source
             .through(MandelbrotFilter.create())
@@ -55,7 +55,7 @@ public class MandelbrotPlayer extends DspApp {
 
     public static void main(String[] args) {
         float clockSpeed = 9450;
-        MasterOscillator oscillator = new MasterOscillator(clockSpeed);
+        MasterOscillator oscillator = MasterOscillator.create();
         MandelbrotPlayer system = new MandelbrotPlayer(clockSpeed);
         system.connectTo(oscillator);
 

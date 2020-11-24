@@ -11,7 +11,6 @@ public class SlaveOscillator extends Oscillator implements State {
     private int t = 0;
 
     public SlaveOscillator(Oscillator parent, int period, int phase) {
-        super(parent.clockSpeed() / period);
         this.parent = parent;
         this.period = period;
         this.phase = phase % period;

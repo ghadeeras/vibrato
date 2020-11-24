@@ -30,7 +30,7 @@ public class BufferingWindow implements DspSource<RealVector> {
         return state;
     }
 
-    public static DspFilter<RealValue, RealVector> ofSize(int size) {
+    public static DspFilter<RealValue, RealVector> create(int size) {
         return input-> new BufferingWindow(input, size);
     }
 

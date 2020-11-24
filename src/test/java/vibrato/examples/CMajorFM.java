@@ -23,23 +23,24 @@ public class CMajorFM extends DspApp {
             523.26, 493.88, 440.00, 392.00, 349.23, 329.63, 293.66, 261.62
         ).map(freq -> freq * zHertz).toArray());
         var attackEnvelope = Curve
-            .from(0 * zSecond, 0, 0)
-            .to(0.03 * zSecond, 1, 0)
-            .to(0.06 * zSecond, 0.5, 0)
-            .to(0.09 * zSecond, 0.8, 0)
-            .curve(Curve.smooth)
+            .from(0 * zSecond, 0)
+            .to(0.03 * zSecond, 0.95)
+            .to(0.06 * zSecond, 0.45)
+            .to(0.09 * zSecond, 0.75)
+            .slopedAs(Curve.envelope)
+            .create(Curve.smooth)
             .asSignal();
         var muteEnvelope = Curve
             .from(0.00 * zSecond, 1)
             .to(0.07 * zSecond, 0.25)
             .to(0.20 * zSecond, 0)
             .slopedAs(Curve.envelope)
-            .curve(Curve.smooth)
+            .create(Curve.smooth)
             .asSignal();
 
-        var vibratoPlayer = WaveOscillator.from(sineLikeWave);
-        var notePlayer = WaveOscillator.from(scaleFrequencies, Interpolator.truncating);
-        var instrument = BasicFMInstrument.define(sineLikeWave, sineLikeWave,1d/5d, 0.5, attackEnvelope, muteEnvelope);
+        var vibratoPlayer = WaveOscillator.create(sineLikeWave);
+        var notePlayer = WaveOscillator.create(scaleFrequencies, Interpolator.truncating);
+        var instrument = BasicFMInstrument.create(sineLikeWave, sineLikeWave,1d/5d, 0.5, attackEnvelope, muteEnvelope);
 
         var vibratoSource = scalarConstant(6 * zHertz)
             .through(vibratoPlayer);
@@ -48,17 +49,17 @@ public class CMajorFM extends DspApp {
         var excitationResetSource = noteFrequencySource
             .through(diff);
         var excitationSource = scalarConstant(1)
-            .through(WaveGenerator.from(Pulse.pulse(0.3 * zSecond, 0, 2, -1)), excitationResetSource);
+            .through(WaveGenerator.create(Pulse.pulse(0.3 * zSecond, 0, 2, -1)), excitationResetSource);
         noteFrequencySource
             .through(amplitudeModulation(0.03), vibratoSource)
             .through(instrument, excitationSource)
-            .into(AudioSink.of(audioFormat));
+            .into(AudioSink.create(audioFormat));
     }
 
     public static void main(String[] args) {
         var audioFormat = new AudioFormat(44100, 16, 1, true, false);
         var cMajor = new CMajorFM(audioFormat);
-        var oscillator = new MasterOscillator(audioFormat.getFrameRate());
+        var oscillator = MasterOscillator.create();
         cMajor.connectTo(oscillator);
 
         oscillator.oscillateUntil(DspApp::pressedEnter);

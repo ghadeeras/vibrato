@@ -9,14 +9,7 @@ public abstract class Oscillator {
 
     private final List<Operation> operations = new ArrayList<>();
 
-    private final double clockSpeed;
-
-    protected Oscillator(double clockSpeed) {
-        this.clockSpeed = clockSpeed;
-    }
-
-    public double clockSpeed() {
-        return clockSpeed;
+    protected Oscillator() {
     }
 
     protected abstract void declareConnection(State state, Oscillator oscillator);

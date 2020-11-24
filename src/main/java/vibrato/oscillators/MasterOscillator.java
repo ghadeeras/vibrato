@@ -10,8 +10,7 @@ public class MasterOscillator extends Oscillator {
 
     public final Map<State, List<Oscillator>> stateToOscillators = new HashMap<>();
 
-    public MasterOscillator(double clockSpeed) {
-        super(clockSpeed);
+    private MasterOscillator() {
     }
 
     @Override
@@ -54,6 +53,10 @@ public class MasterOscillator extends Oscillator {
     @Override
     public int absolutePhase() {
         return 0;
+    }
+
+    public static MasterOscillator create() {
+        return new MasterOscillator();
     }
 
 }

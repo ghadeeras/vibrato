@@ -21,11 +21,11 @@ public class VariableDelay extends AbstractFIRFilter {
         return () -> interpolator.value(state, -delay.value());
     }
 
-    public static DspController<RealValue, RealValue, RealValue> ofMax(double maxDelay) {
-        return ofMax(maxDelay, Interpolator.linear);
+    public static DspController<RealValue, RealValue, RealValue> create(double maxDelay) {
+        return create(maxDelay, Interpolator.linear);
     }
 
-    public static DspController<RealValue, RealValue, RealValue> ofMax(double maxDelay, Interpolator interpolator) {
+    public static DspController<RealValue, RealValue, RealValue> create(double maxDelay, Interpolator interpolator) {
         return delay -> input -> new VariableDelay(input, (int) Math.ceil(maxDelay), delay, interpolator);
     }
 

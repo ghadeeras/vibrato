@@ -22,13 +22,13 @@ public class CMajor extends DspApp {
             .antiAliased()
             .withCachedInterpolation(Interpolator.cubic);
 
-        var vibratoPlayer = WaveOscillator.from(sineLikeWave);
-        var notePlayer = WaveOscillator.from(scaleFrequencies, Interpolator.truncating);
-        var instrument = WaveOscillator.from(instrumentWave);
+        var vibratoPlayer = WaveOscillator.create(sineLikeWave);
+        var notePlayer = WaveOscillator.create(scaleFrequencies, Interpolator.truncating);
+        var instrument = WaveOscillator.create(instrumentWave);
 
         var vibratoFreqSource = scalarConstant(6 * zHertz);
         var tempoSource = scalarConstant(2 * zHertz / scaleFrequencies.size());
-        var audioSink = AudioSink.of(audioFormat);
+        var audioSink = AudioSink.create(audioFormat);
 
         var vibrato = vibratoFreqSource
             .through(vibratoPlayer);
@@ -42,7 +42,7 @@ public class CMajor extends DspApp {
     public static void main(String[] args) {
         var audioFormat = new AudioFormat(44100, 16, 1, true, false);
         var cMajor = new CMajor(audioFormat);
-        var oscillator = new MasterOscillator(audioFormat.getFrameRate());
+        var oscillator = MasterOscillator.create();
         cMajor.connectTo(oscillator);
 
         oscillator.oscillateUntil(DspApp::pressedEnter);

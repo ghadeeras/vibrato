@@ -14,12 +14,12 @@ public class WavPlusFilteredRandom extends DspApp {
     public WavPlusFilteredRandom(AudioInputStream stream) {
         super(stream.getFormat().getFrameRate());
 
-        var audioSource = from(AudioSource.from(stream, stream.getFormat()));
+        var audioSource = from(AudioSource.create(stream, stream.getFormat()));
         var randomSource = from(RandomSource.uniform(sameSeed()));
 
         var mixer = Mixer.average();
         var middleAFreqFilter = SecondOrderFilter.bpf(128, 440 * zHertz, zHertz, 0.5);
-        var audioSink = AudioSink.of(stream.getFormat());
+        var audioSink = AudioSink.create(stream.getFormat());
 
         var audioChannel = audioSource.through(mixer);
         var randomChannel = randomSource.through(middleAFreqFilter);
@@ -30,8 +30,7 @@ public class WavPlusFilteredRandom extends DspApp {
     public static void main(String[] args) {
         AudioInputStream audioInputStream = openAudioInputStream(args);
 
-        float clockSpeed = audioInputStream.getFormat().getFrameRate();
-        MasterOscillator oscillator = new MasterOscillator(clockSpeed);
+        MasterOscillator oscillator = MasterOscillator.create();
         WavPlusFilteredRandom system = new WavPlusFilteredRandom(audioInputStream);
         system.connectTo(oscillator);
 

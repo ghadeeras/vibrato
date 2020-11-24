@@ -45,11 +45,11 @@ public class Curve {
             return this;
         }
 
-        public RealFunction curve(CurveFunction curveFunction) {
+        public RealFunction create(CurveFunction curveFunction) {
             return x -> evaluateFor(x, pointArray(), subCurves(curveFunction));
         }
 
-        public RealFunction slidingCurve(CurveFunction curveFunction) {
+        public RealFunction createForSlowInput(CurveFunction curveFunction) {
             return new Sliding(pointArray(), subCurves(curveFunction));
         }
 

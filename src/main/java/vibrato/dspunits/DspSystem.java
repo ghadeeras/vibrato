@@ -64,12 +64,17 @@ public class DspSystem extends CompositeUnit {
     }
 
     private static final int sineResolution = 8;
-    protected static final WaveTable sineLikeWave = WaveTable.create(
-        DoubleStream
-            .iterate(0, d -> d + 1)
-            .map(d -> Math.sin(d * 2 * Math.PI / sineResolution))
-            .limit(sineResolution)
-            .toArray()
-    ).withCachedInterpolation(Interpolator.cubic);
+
+    protected static final WaveTable sineLikeWave = sineLikeWave(sineResolution);
+
+    protected static WaveTable sineLikeWave(int resolution) {
+        return WaveTable.create(
+            DoubleStream
+                .iterate(0, d -> d + 1)
+                .map(d -> Math.sin(d * 2 * Math.PI / resolution))
+                .limit(resolution)
+                .toArray()
+        ).withCachedInterpolation(Interpolator.cubic);
+    }
 
 }

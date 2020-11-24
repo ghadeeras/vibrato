@@ -64,11 +64,11 @@ public class WaveGenerator implements DspSource<RealValue>, State {
 
     }
 
-    public static DspController<RealValue, RealValue, RealValue> from(RealFunction function) {
-        return from(function.asSignal());
+    public static DspController<RealValue, RealValue, RealValue> create(RealFunction function) {
+        return create(function.asSignal());
     }
 
-    public static DspController<RealValue, RealValue, RealValue> from(Signal signal) {
+    public static DspController<RealValue, RealValue, RealValue> create(Signal signal) {
         return reset -> input -> new WaveGenerator(reset, input, signal);
     }
 

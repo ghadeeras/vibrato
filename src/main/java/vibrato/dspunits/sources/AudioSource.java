@@ -50,11 +50,11 @@ public class AudioSource implements State {
         }
     }
 
-    public static DspSource<RealVector> from(AudioInputStream audioStream) {
-        return from(audioStream, audioStream.getFormat());
+    public static DspSource<RealVector> create(AudioInputStream audioStream) {
+        return create(audioStream, audioStream.getFormat());
     }
 
-    public static DspSource<RealVector> from(InputStream audioStream, AudioFormat format) {
+    public static DspSource<RealVector> create(InputStream audioStream, AudioFormat format) {
         AudioSource source = new AudioSource(audioStream, format);
         return DspSource.create(source.channels, source.generation);
     }

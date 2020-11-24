@@ -42,7 +42,7 @@ public class AudioSink implements DspUnit, State {
         return DspUnit.ops(consumption);
     }
 
-    public static DspSink<RealVector> of(AudioFormat format) {
+    public static DspSink<RealVector> create(AudioFormat format) {
         return into(new AudioLineOutputStream(format), format);
     }
 

@@ -19,12 +19,14 @@ import javax.sound.sampled.AudioInputStream;
 
 public class PlayToOscilloscope extends Application {
 
+    private static final int resolution = 768;
+
     @Override
     public void start(Stage stage) {
         var stream = DspApp.openAudioInputStream(getParameters().getRaw().get(0));
-        var canvas = new Canvas(512, 512);
+        var canvas = new Canvas(resolution, resolution);
 
-        var oscillator = new MasterOscillator(stream.getFormat().getFrameRate());
+        var oscillator = MasterOscillator.create();
         var player = new AudioPlayer(stream, canvas);
         player.connectTo(oscillator);
         oscillator.spawnOscillationThread(DspApp::pressedEnter);
@@ -52,17 +54,18 @@ public class PlayToOscilloscope extends Application {
 
         protected AudioPlayer(AudioInputStream stream, Canvas canvas) {
             super(stream.getFormat().getFrameRate());
-            var source = AudioSource.from(stream, stream.getFormat());
-            var fft = FastFourierTransformer.withMinimumSpectrumSize(512);
+            var source = AudioSource.create(stream, stream.getFormat());
+            var fft = FastFourierTransformer.create(resolution * 2);
+            int spectrumSize = fft.length().output().size();
             from(source)
                 .into(
-                    AudioSink.of(stream.getFormat()),
+                    AudioSink.create(stream.getFormat()),
                     from(Mixer.average())
-                        .through(BufferingWindow.ofSize(512))
+                        .through(BufferingWindow.create(spectrumSize))
                         .into(fft)
                 );
             from(fft.length())
-                .through(input -> DspSource.create(input.compressOnYAxis(20).window(256)))
+                .through(input -> DspSource.create(input.compressOnYAxis(20).window(spectrumSize / 2)))
                 .into(Oscilloscope.renderingOn(canvas));
         }
 
