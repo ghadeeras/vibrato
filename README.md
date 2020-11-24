@@ -73,6 +73,8 @@ directory](src/test/java/vibrato/examples). To follow is a brief description of 
  * [**C Major**](src/test/java/vibrato/examples/CMajor.java): An example that plays the C Major scale, with vibrato! :-)
  * [**C Major (Enveloped)**](src/test/java/vibrato/examples/CMajorEnveloped.java): Same as C Major but uses the 
  `BasicInstrument` class to apply an envelope on each note.
+ * [**C Major FM (Enveloped)**](src/test/java/vibrato/examples/CMajorFM.java): Same as C Major but uses the 
+ `BasicFMInstrument` class to use frequency modulation and apply an envelope on each note.
  * [**Mandlebrot**](src/test/java/vibrato/examples/MandelbrotPlayer.java): Playing a Mandelbrot chord :-).
  * [**Doppler**](src/test/java/vibrato/examples/Doppler.java): An example simulating Doppler effect. It simulates an 
  audio source that is moving around the listener.

@@ -68,15 +68,28 @@ public class Oscilloscope implements DspUnit, State {
         var height = canvas.getHeight();
         gc.save();
         gc.setFill(Color.BLACK);
-        gc.setStroke(Color.WHITE);
         gc.fillRect(0, 0, width, height);
-        gc.beginPath();
+        drawGrid(gc, width / 4, height / 4);
         gc.moveTo(x(0, width), y(0, height));
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(1);
+        gc.beginPath();
         for (int i = 1; i < inputCopy.size(); i++) {
             gc.lineTo(x(i, width), y(i, height));
         }
         gc.stroke();
         gc.restore();
+    }
+
+    private void drawGrid(javafx.scene.canvas.GraphicsContext gc, double unitX, double unitY) {
+        gc.setLineWidth(0.25);
+        gc.setStroke(Color.GREY);
+        gc.strokeLine(0, 1 * unitY, 4 * unitX, 1 * unitY);
+        gc.strokeLine(0, 2 * unitY, 4 * unitX, 2 * unitY);
+        gc.strokeLine(0, 3 * unitY, 4 * unitX, 3 * unitY);
+        gc.strokeLine(1 * unitX, 0, 1 * unitX, 4 * unitY);
+        gc.strokeLine(2 * unitX, 0, 2 * unitX, 4 * unitY);
+        gc.strokeLine(3 * unitX, 0, 3 * unitX, 4 * unitY);
     }
 
     private double x(int i, double width) {

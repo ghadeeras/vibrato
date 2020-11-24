@@ -1,8 +1,7 @@
 package vibrato.examples;
 
-import vibrato.dspunits.filters.fir.VariableDelay;
 import vibrato.dspunits.sinks.AudioSink;
-import vibrato.functions.Linear;
+import vibrato.effects.OmniSourceMover;
 import vibrato.interpolators.Interpolator;
 import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.music.synthesis.generators.WaveTable;
@@ -16,45 +15,27 @@ public class Doppler extends DspApp {
         super(audioFormat.getFrameRate());
 
         var sound = WaveTable.create(randomSamples(-0.5, +0.5, 16)).withCachedInterpolation(Interpolator.cubic);
-        var audioSource = scalarConstant(220 * zHertz).through(WaveOscillator.from(sound));
+        var audioSource = scalarConstant(220 * zHertz).through(WaveOscillator.create(sound));
 
-        var xs = WaveTable.create(8, 0, -8, 0).withCachedInterpolation(Interpolator.cubic);
-        var ys = WaveTable.create(0, 1, 0, -1).withCachedInterpolation(Interpolator.cubic);
+        var xs = WaveTable.create(80 * zMeters, 0, -80 * zMeters, 0).withCachedInterpolation(Interpolator.cubic);
+        var ys = WaveTable.create(0, 10 * zMeters, 0, -10 * zMeters).withCachedInterpolation(Interpolator.cubic);
         var audioSourceRPS = scalarConstant(zHertz / 15);
         var audioSourcePos = join(
-            audioSourceRPS.through(WaveOscillator.from(xs)),
-            audioSourceRPS.through(WaveOscillator.from(ys))
+            audioSourceRPS.through(WaveOscillator.create(xs)),
+            audioSourceRPS.through(WaveOscillator.create(ys))
         );
 
-        var audioSourceDistanceSquared = audioSourcePos.through(vectorLengthSquared);
-        var audioSourceDistance = audioSourceDistanceSquared.through(scalarSquareRoot);
-        var audioSourceDirection = audioSourcePos.through(vectorDivision, audioSourceDistance);
+        var mover = OmniSourceMover.create(10 * zMeters, 100 * zMeters);
 
-        var delay = VariableDelay.ofMax(100 * zMeters, Interpolator.linear);
-        var perceivedAudio = audioSource
-            .through(delay, audioSourceDistance.through(scalarMultiplication(10 * zMeters)))
-            .through(scalarDivision, audioSourceDistanceSquared);
+        var audioSink = AudioSink.create(audioFormat);
 
-        var audioSink = AudioSink.of(audioFormat);
-
-        var earAngle = Math.PI / 6;
-        var cos = Math.cos(earAngle);
-        var sin = Math.sin(earAngle);
-        var adapter = scalarFunction(Linear.linear(0.4, 0.6));
-        var leftChannelWeight = audioSourceDirection.through(dotProduct(-cos, sin)).through(adapter);
-        var rightChannelWeight = audioSourceDirection.through(dotProduct(+cos, sin)).through(adapter);
-
-        join(
-            perceivedAudio.through(scalarMultiplication, leftChannelWeight),
-            perceivedAudio.through(scalarMultiplication, rightChannelWeight)
-        ).into(audioSink);
+        audioSource.through(mover, audioSourcePos).into(audioSink);
     }
 
     public static void main(String[] args) {
         var audioFormat = new AudioFormat(44100, 16, 2, true, false);
 
-        var clockSpeed = audioFormat.getFrameRate();
-        var oscillator = new MasterOscillator(clockSpeed);
+        var oscillator = MasterOscillator.create();
         var system = new Doppler(audioFormat);
         system.connectTo(oscillator);
 

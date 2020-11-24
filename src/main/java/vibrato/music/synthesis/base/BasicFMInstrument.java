@@ -23,14 +23,14 @@ public class BasicFMInstrument extends DspSystem implements DspSource<RealValue>
         RealValue frequency
     ) {
         super(1);
-        var basicInstrument = BasicInstrument.define(wave, attackEnvelope, muteEnvelope);
+        var basicInstrument = BasicInstrument.create(wave, attackEnvelope, muteEnvelope);
 
         var excitationSource = fromSource(excitation);
         var frequencySource = fromSource(frequency);
 
         var modulatingControl = frequencySource
             .through(scalarMultiplication(modulationRatio))
-            .through(WaveOscillator.from(modulatingWave));
+            .through(WaveOscillator.create(modulatingWave));
 
         this.source = frequencySource
             .through(amplitudeModulation(modulationIndex), modulatingControl)
@@ -42,7 +42,7 @@ public class BasicFMInstrument extends DspSystem implements DspSource<RealValue>
         return source.output();
     }
 
-    public static DspController<RealValue, RealValue, RealValue> define(
+    public static DspController<RealValue, RealValue, RealValue> create(
         WaveTable wave,
         WaveTable modulatingWave,
         double modulationRatio,

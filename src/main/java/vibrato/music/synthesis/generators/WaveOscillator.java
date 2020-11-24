@@ -48,11 +48,11 @@ public class WaveOscillator implements DspSource<RealValue>, State {
         return ops(rotation);
     }
 
-    public static DspFilter<RealValue, RealValue> from(WaveTable waveTable) {
-        return from(waveTable, Interpolator.cubic);
+    public static DspFilter<RealValue, RealValue> create(WaveTable waveTable) {
+        return create(waveTable, Interpolator.cubic);
     }
 
-    public static DspFilter<RealValue, RealValue> from(WaveTable waveTable, Interpolator interpolator) {
+    public static DspFilter<RealValue, RealValue> create(WaveTable waveTable, Interpolator interpolator) {
         return input -> new WaveOscillator(input, waveTable, interpolator);
     }
 
