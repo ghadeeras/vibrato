@@ -75,6 +75,8 @@ directory](src/test/java/vibrato/examples). To follow is a brief description of 
  `BasicInstrument` class to apply an envelope on each note.
  * [**C Major FM (Enveloped)**](src/test/java/vibrato/examples/CMajorFM.java): Same as C Major but uses the 
  `BasicFMInstrument` class to use frequency modulation and apply an envelope on each note.
+ * [**C Major (Subtractive)**](src/test/java/vibrato/examples/CMajorSubtractive.java): Same as C Major but applies a 
+ dynamic comb filter on white noise to produce notes and their harmonics.
  * [**Mandlebrot**](src/test/java/vibrato/examples/MandelbrotPlayer.java): Playing a Mandelbrot chord :-).
  * [**Doppler**](src/test/java/vibrato/examples/Doppler.java): An example simulating Doppler effect. It simulates an 
  audio source that is moving around the listener.

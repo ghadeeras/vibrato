@@ -82,6 +82,14 @@ public class CompositeUnit implements DspUnit {
             return through(controller.apply(controlSignal.source.output()));
         }
 
+        public <V extends RealVector, C extends RealVector> Filter<C, V> throughInputOf(DspController<C, ? super O, V> controller) {
+            return from(controller.flip().apply(this.source.output()));
+        }
+
+        public <V extends RealVector, I extends RealVector> Filter<I, V> throughControlOf(DspController<? super O, I, V> controller) {
+            return from(controller.apply(this.source.output()));
+        }
+
         @SafeVarargs
         public final void into(DspSink<? super O>... sinks) {
             for (DspSink<? super O> sink : sinks) {

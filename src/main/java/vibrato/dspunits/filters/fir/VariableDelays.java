@@ -17,18 +17,17 @@ public class VariableDelays implements DspSource<RealVector> {
     private final Operation stateUpdate;
     private final Line output;
 
-
     private VariableDelays(RealValue input, int maxDelay, RealVector delays, Interpolator interpolator) {
         this.delayLine = new CircularBuffer(maxDelay);
         this.output = new Line(input.size(), i -> interpolator.value(delayLine, -delays.value(i)));
         this.stateUpdate = delayLine.readingFrom(input);
     }
 
-    public static DspController<RealVector, RealValue, RealVector> ofMax(double maxDelay) {
-        return ofMax(maxDelay, Interpolator.linear);
+    public static DspController<RealVector, RealValue, RealVector> create(double maxDelay) {
+        return create(maxDelay, Interpolator.linear);
     }
 
-    public static DspController<RealVector, RealValue, RealVector> ofMax(double maxDelay, Interpolator interpolator) {
+    public static DspController<RealVector, RealValue, RealVector> create(double maxDelay, Interpolator interpolator) {
         return delay -> input -> new VariableDelays(input, (int) Math.ceil(maxDelay), delay, interpolator);
     }
 

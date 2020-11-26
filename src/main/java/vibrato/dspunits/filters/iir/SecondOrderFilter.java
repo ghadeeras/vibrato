@@ -1,10 +1,11 @@
 package vibrato.dspunits.filters.iir;
 
 import vibrato.complex.ComplexNumber;
+import vibrato.dspunits.DspController;
 import vibrato.dspunits.DspFilter;
 import vibrato.dspunits.DspSource;
+import vibrato.interpolators.Interpolator;
 import vibrato.utils.DspUtils;
-import vibrato.vectors.AbstractDelayLine;
 import vibrato.vectors.RealValue;
 import vibrato.vectors.RealVector;
 
@@ -17,8 +18,8 @@ public class SecondOrderFilter extends AbstractIIRFilter {
         this.coefficients = coefficients;
     }
 
-    private SecondOrderFilter(RealValue input, AbstractDelayLine state, Coefficients coefficients) {
-        super(input, state);
+    private SecondOrderFilter(RealValue input, Coefficients coefficients, RealValue delayFactor, Interpolator interpolator) {
+        super(input, 2, delayFactor, interpolator);
         this.coefficients = coefficients;
     }
 
@@ -37,7 +38,7 @@ public class SecondOrderFilter extends AbstractIIRFilter {
             coefficients.output2 * state.value(-2);
     }
 
-    private static class Coefficients implements DspFilter<RealValue, RealValue> {
+    public static class Coefficients implements DspFilter<RealValue, RealValue> {
 
         public final double feedBack1;
         public final double feedBack2;
@@ -66,9 +67,13 @@ public class SecondOrderFilter extends AbstractIIRFilter {
             return new SecondOrderFilter(input, this);
         }
 
+        public DspController<RealValue, RealValue, RealValue> variableDelay(Interpolator interpolator) {
+            return delayFactor -> input -> new SecondOrderFilter(input, this, delayFactor, interpolator);
+        }
+
     }
 
-    public static DspFilter<RealValue, RealValue> poleZero(double gain, ComplexNumber pole, ComplexNumber zero) {
+    public static Coefficients poleZero(double gain, ComplexNumber pole, ComplexNumber zero) {
         double b1 = -2 * zero.real() * gain;
         double b2 = +zero.length() * zero.length() * gain;
         double a1 = +2 * pole.real();
@@ -76,7 +81,7 @@ public class SecondOrderFilter extends AbstractIIRFilter {
         return new Coefficients(a1, a2, gain, b1, b2);
     }
 
-    public static DspFilter<RealValue, RealValue> notchFilter(double constantGain, double frequency, double bandWidth, double cutOffGain) {
+    public static Coefficients notchFilter(double constantGain, double frequency, double bandWidth, double cutOffGain) {
         double beta = Math.tan(Math.PI * bandWidth) * Math.sqrt(1 - cutOffGain * cutOffGain) / cutOffGain;
         double b = 1 / (1 + beta);
         double b0 = constantGain * b;
@@ -86,7 +91,7 @@ public class SecondOrderFilter extends AbstractIIRFilter {
         return new Coefficients(a1, a2, b0, b1, b0);
     }
 
-    public static DspFilter<RealValue, RealValue> bpf(double constantGain, double frequency, double bandWidth, double cutOffGain) {
+    public static Coefficients bpf(double constantGain, double frequency, double bandWidth, double cutOffGain) {
         double beta = Math.tan(Math.PI * bandWidth) * cutOffGain / Math.sqrt(1 - cutOffGain * cutOffGain);
         double b = 1 / (1 + beta);
         double b0 = constantGain * (1 - b);
@@ -95,7 +100,7 @@ public class SecondOrderFilter extends AbstractIIRFilter {
         return new Coefficients(a1, a2, b0, 0, -b0);
     }
 
-    public static DspFilter<RealValue, RealValue> lpf(double constantGain, double cutOffFrequency, double cutOffGain) {
+    public static Coefficients lpf(double constantGain, double cutOffFrequency, double cutOffGain) {
         double omega1 = Math.tan(Math.PI * cutOffFrequency);
         double omega2 = omega1 * omega1;
         double d = 1 + omega1 / cutOffGain + omega2;
@@ -105,7 +110,7 @@ public class SecondOrderFilter extends AbstractIIRFilter {
         return new Coefficients(a1, a2, gain, 2 * gain, gain);
     }
 
-    public static DspFilter<RealValue, RealValue> hpf(double constantGain, double cutOffFrequency, double cutOffGain) {
+    public static Coefficients hpf(double constantGain, double cutOffFrequency, double cutOffGain) {
         double omega1 = 1 / Math.tan(Math.PI * cutOffFrequency);
         double omega2 = omega1 * omega1;
         double d = 1 + omega1 / cutOffGain + omega2;

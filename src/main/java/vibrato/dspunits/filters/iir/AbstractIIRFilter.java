@@ -1,7 +1,7 @@
 package vibrato.dspunits.filters.iir;
 
 import vibrato.dspunits.filters.AbstractLinearFilter;
-import vibrato.vectors.AbstractDelayLine;
+import vibrato.interpolators.Interpolator;
 import vibrato.vectors.RealValue;
 import vibrato.vectors.RealVector;
 
@@ -11,8 +11,8 @@ public abstract class AbstractIIRFilter extends AbstractLinearFilter {
         super(input, order);
     }
 
-    protected AbstractIIRFilter(RealValue input, AbstractDelayLine state) {
-        super(input, state);
+    protected AbstractIIRFilter(RealValue input, int order, RealValue delayFactor, Interpolator interpolator) {
+        super(input, order, delayFactor, interpolator);
     }
 
     @Override

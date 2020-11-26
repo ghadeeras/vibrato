@@ -2,7 +2,6 @@ package vibrato.dspunits.filters.fir;
 
 import vibrato.dspunits.DspFilter;
 import vibrato.functions.DiscreteSignal;
-import vibrato.vectors.AbstractDelayLine;
 import vibrato.vectors.RealValue;
 import vibrato.vectors.RealVector;
 
@@ -13,11 +12,6 @@ public class FIRFilter extends AbstractFIRFilter {
     private FIRFilter(RealValue input, int order, DiscreteSignal impulseResponse) {
         super(input, order);
         this.impulseResponse = impulseResponse.samples(order + 1, 0, 1);
-    }
-
-    private FIRFilter(RealValue input, AbstractDelayLine state, DiscreteSignal impulseResponse) {
-        super(input, state);
-        this.impulseResponse = impulseResponse.samples(state.size() + 1, 0, 1);
     }
 
     @Override
@@ -31,7 +25,7 @@ public class FIRFilter extends AbstractFIRFilter {
         };
     }
 
-    public static DspFilter<RealValue, RealValue> withImpulseResponse(RealVector impulseResponse) {
+    public static DspFilter<RealValue, RealValue> create(RealVector impulseResponse) {
         return input -> new FIRFilter(input, impulseResponse.size() - 1, impulseResponse.asSignal());
     }
 

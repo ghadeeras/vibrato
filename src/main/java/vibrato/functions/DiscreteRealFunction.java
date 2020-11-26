@@ -66,10 +66,14 @@ public interface DiscreteRealFunction {
     class Window implements RealVector {
 
         private final DiscreteRealFunction function;
+        private final int firstIndexInclusive;
+        private final int lastIndexExclusive;
         private final int size;
 
         private Window(DiscreteRealFunction function, int firstIndexInclusive, int lastIndexExclusive) {
-            this.function = function.shiftOnXAxis(-firstIndexInclusive);
+            this.function = function;
+            this.firstIndexInclusive = firstIndexInclusive;
+            this.lastIndexExclusive = lastIndexExclusive;
             this.size = lastIndexExclusive - firstIndexInclusive;
         }
 
@@ -80,7 +84,7 @@ public interface DiscreteRealFunction {
 
         @Override
         public double value(int index) {
-            return 0 <= index && index < size ? function.apply(index) : 0;
+            return firstIndexInclusive <= index && index < lastIndexExclusive ? function.apply(index) : 0;
         }
 
     }
