@@ -61,11 +61,11 @@ a DSP unit changing its output before a dependant unit getting the chance to rea
 The reading phase and writing phase can also be thought of as the up-edge and down-edge of a clock signal or pulse. The
 unit which provides these pulses is the [`Oscillator`](src/main/java/vibrato/oscillators/Oscillator.java). There are two
 kinds of oscillators:
- * [`MasterOscillator`](src/main/java/vibrato/oscillators/MasterOscillator.java): Provides the highest clock rate 
+ * [`MainOscillator`](src/main/java/vibrato/oscillators/MainOscillator.java): Provides the highest clock rate 
  possible.
- * [`SlaveOscillator`](src/main/java/vibrato/oscillators/SlaveOscillator.java): Provides lower clock rates that are 
- rational fractions of the master oscillator rate. The master oscillator has factory methods for getting slave 
- oscillators. It is also possible to have oscillators operating on the same speed, but on different phase shifts.
+ * [`SubOscillator`](src/main/java/vibrato/oscillators/SubOscillator.java): Provides lower clock rates that are 
+ rational fractions of the main oscillator rate. The main oscillator has factory methods for getting sub- oscillators. 
+ It is also possible to have oscillators operating on the same speed, but on different phase shifts.
  
 ## Examples
 To see how the framework can be used to construct simple audio applications, some samples can be found in the [test 

@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-public class MasterOscillator extends Oscillator {
+public class MainOscillator extends Oscillator {
 
     public final Map<State, List<Oscillator>> stateToOscillators = new HashMap<>();
 
-    private MasterOscillator() {
+    private MainOscillator() {
     }
 
     @Override
@@ -55,8 +55,8 @@ public class MasterOscillator extends Oscillator {
         return 0;
     }
 
-    public static MasterOscillator create() {
-        return new MasterOscillator();
+    public static MainOscillator create() {
+        return new MainOscillator();
     }
 
 }

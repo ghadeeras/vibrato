@@ -68,6 +68,10 @@ public class FastFourierTransformer implements DspSink<RealVector> {
         return angleParts;
     }
 
+    public int spectrumSize() {
+        return fft.frequencySamplesCount();
+    }
+
     public static FastFourierTransformer create(int minSize) {
         return new FastFourierTransformer(minSize);
     }

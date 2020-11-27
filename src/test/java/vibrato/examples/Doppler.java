@@ -5,7 +5,7 @@ import vibrato.effects.OmniSourceMover;
 import vibrato.interpolators.Interpolator;
 import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.music.synthesis.generators.WaveTable;
-import vibrato.oscillators.MasterOscillator;
+import vibrato.oscillators.MainOscillator;
 
 import javax.sound.sampled.AudioFormat;
 
@@ -27,15 +27,15 @@ public class Doppler extends DspApp {
 
         var mover = OmniSourceMover.create(10 * zMeters, 100 * zMeters);
 
-        var audioSink = AudioSink.create(audioFormat);
-
-        audioSource.through(mover, audioSourcePos).into(audioSink);
+        audioSource
+            .through(mover, audioSourcePos)
+            .into(AudioSink.create(audioFormat));
     }
 
     public static void main(String[] args) {
         var audioFormat = new AudioFormat(44100, 16, 2, true, false);
 
-        var oscillator = MasterOscillator.create();
+        var oscillator = MainOscillator.create();
         var system = new Doppler(audioFormat);
         system.connectTo(oscillator);
 

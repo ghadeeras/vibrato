@@ -13,7 +13,7 @@ import vibrato.fourier.FastFourierTransformer;
 import vibrato.dspunits.sinks.AudioSink;
 import vibrato.dspunits.sinks.Oscilloscope;
 import vibrato.dspunits.sources.AudioSource;
-import vibrato.oscillators.MasterOscillator;
+import vibrato.oscillators.MainOscillator;
 
 import javax.sound.sampled.AudioInputStream;
 
@@ -26,7 +26,7 @@ public class PlayToOscilloscope extends Application {
         var stream = DspApp.openAudioInputStream(getParameters().getRaw().get(0));
         var canvas = new Canvas(resolution, resolution);
 
-        var oscillator = MasterOscillator.create();
+        var oscillator = MainOscillator.create();
         var player = new AudioPlayer(stream, canvas);
         player.connectTo(oscillator);
         oscillator.spawnOscillationThread(DspApp::pressedEnter);
@@ -54,18 +54,19 @@ public class PlayToOscilloscope extends Application {
 
         protected AudioPlayer(AudioInputStream stream, Canvas canvas) {
             super(stream.getFormat().getFrameRate());
-            var source = AudioSource.create(stream, stream.getFormat());
+
             var fft = FastFourierTransformer.create(resolution * 2);
-            int spectrumSize = fft.length().output().size();
-            from(source)
+
+            from(AudioSource.create(stream, stream.getFormat()))
                 .into(
                     AudioSink.create(stream.getFormat()),
                     from(Mixer.average())
-                        .through(BufferingWindow.create(spectrumSize))
+                        .through(BufferingWindow.create(fft.spectrumSize()))
                         .into(fft)
                 );
+
             from(fft.length())
-                .through(input -> DspSource.create(input.compressOnYAxis(20).window(spectrumSize / 2)))
+                .through(input -> DspSource.create(input.compressOnYAxis(20).window(fft.spectrumSize() / 2)))
                 .into(Oscilloscope.renderingOn(canvas));
         }
 

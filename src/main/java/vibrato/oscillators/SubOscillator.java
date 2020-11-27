@@ -1,6 +1,6 @@
 package vibrato.oscillators;
 
-public class SlaveOscillator extends Oscillator implements State {
+public class SubOscillator extends Oscillator implements State {
 
     private final Oscillator parent;
     private final int period;
@@ -10,7 +10,7 @@ public class SlaveOscillator extends Oscillator implements State {
 
     private int t = 0;
 
-    public SlaveOscillator(Oscillator parent, int period, int phase) {
+    public SubOscillator(Oscillator parent, int period, int phase) {
         this.parent = parent;
         this.period = period;
         this.phase = phase % period;
@@ -38,20 +38,20 @@ public class SlaveOscillator extends Oscillator implements State {
 
         @Override
         public State state() {
-            return SlaveOscillator.this;
+            return SubOscillator.this;
         }
 
         @Override
         public void readPhase() {
             if (t == phase) {
-                SlaveOscillator.this.readPhase();
+                SubOscillator.this.readPhase();
             }
         }
 
         @Override
         public void writePhase() {
             if (t == phase) {
-                SlaveOscillator.this.writePhase();
+                SubOscillator.this.writePhase();
             }
             t = (t + 1) % period;
         }

@@ -1,15 +1,16 @@
 package vibrato.examples;
 
 import vibrato.dspunits.filters.MandelbrotFilter;
-import vibrato.dspunits.filters.iir.SecondOrderFilter;
 import vibrato.dspunits.sinks.AudioSink;
 import vibrato.interpolators.Interpolator;
 import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.music.synthesis.generators.WaveTable;
-import vibrato.oscillators.MasterOscillator;
+import vibrato.oscillators.MainOscillator;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.stream.DoubleStream;
+
+import static vibrato.dspunits.filters.iir.SecondOrderFilter.lpf;
 
 public class MandelbrotPlayer extends DspApp {
 
@@ -39,23 +40,19 @@ public class MandelbrotPlayer extends DspApp {
         ).toArray());
 
         var tempoSource = scalarConstant(2 * zHertz / xs.size());
-
         var source = join(
             tempoSource.through(WaveOscillator.create(xs, Interpolator.truncating)),
             tempoSource.through(WaveOscillator.create(ys, Interpolator.truncating))
         );
-        var lpf = SecondOrderFilter.lpf(1, 2000 * zHertz, 0.5);
-        var audioSink = AudioSink.create(new AudioFormat(clockSpeed, 16, 2, true, false));
-
         source
             .through(MandelbrotFilter.create())
-            .through(replicate(lpf))
-            .into(audioSink);
+            .through(replicate(lpf(1, 2000 * zHertz, 0.5)))
+            .into(AudioSink.create(new AudioFormat(clockSpeed, 16, 2, true, false)));
     }
 
     public static void main(String[] args) {
         float clockSpeed = 9450;
-        MasterOscillator oscillator = MasterOscillator.create();
+        MainOscillator oscillator = MainOscillator.create();
         MandelbrotPlayer system = new MandelbrotPlayer(clockSpeed);
         system.connectTo(oscillator);
 

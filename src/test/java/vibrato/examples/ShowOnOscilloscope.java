@@ -13,7 +13,7 @@ import vibrato.interpolators.Interpolator;
 import vibrato.music.synthesis.base.EnvelopeGenerator;
 import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.music.synthesis.generators.WaveTable;
-import vibrato.oscillators.MasterOscillator;
+import vibrato.oscillators.MainOscillator;
 import vibrato.vectors.RealValue;
 
 public class ShowOnOscilloscope extends Application {
@@ -24,7 +24,7 @@ public class ShowOnOscilloscope extends Application {
     public void start(Stage stage) {
         var canvas = new Canvas(resolution, resolution);
 
-        var oscillator = MasterOscillator.create();
+        var oscillator = MainOscillator.create();
         var viewer = new Viewer(canvas);
         viewer.connectTo(oscillator);
         oscillator.spawnOscillationThread(() -> {

@@ -40,7 +40,7 @@ public abstract class Oscillator {
     }
 
     public Oscillator oscillator(int period, int phase) {
-        return new SlaveOscillator(this, period, phase);
+        return new SubOscillator(this, period, phase);
     }
 
     public boolean conflictsWith(Oscillator that) {

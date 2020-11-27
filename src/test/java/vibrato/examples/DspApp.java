@@ -3,7 +3,7 @@ package vibrato.examples;
 import vibrato.dspunits.DspSystem;
 import vibrato.functions.Linear;
 import vibrato.functions.RealFunction;
-import vibrato.oscillators.MasterOscillator;
+import vibrato.oscillators.MainOscillator;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -19,7 +19,7 @@ public abstract class DspApp extends DspSystem {
         super(clockSpeed);
     }
 
-    public static void loop(MasterOscillator oscillator) {
+    public static void loop(MainOscillator oscillator) {
         System.out.println();
         System.out.println("Press [Enter] to stop.");
         while (!pressedEnter()) {

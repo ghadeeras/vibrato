@@ -5,7 +5,7 @@ import vibrato.dspunits.sources.RandomSource;
 import vibrato.interpolators.Interpolator;
 import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.music.synthesis.generators.WaveTable;
-import vibrato.oscillators.MasterOscillator;
+import vibrato.oscillators.MainOscillator;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.stream.DoubleStream;
@@ -25,7 +25,7 @@ public class CMajorSubtractive extends DspApp {
         var vibrato = scalarConstant(6 * zHertz)
             .through(WaveOscillator.create(sineLikeWave));
 
-        var frequencyController = hpf(1, 0.25, 0.025)
+        var frequencyController = hpf(25, 0.48, 0.01)
             .variableDelay(Interpolator.cubic);
         var instrument = from(RandomSource.uniform(null))
             .throughInputOf(frequencyController);
@@ -35,7 +35,7 @@ public class CMajorSubtractive extends DspApp {
         scalarConstant(2 * zHertz / scaleFrequencies.size())
             .through(WaveOscillator.create(scaleFrequencies, Interpolator.truncating))
             .through(amplitudeModulation(0.03), vibrato)
-            .through(scalarFunction(i -> 1 / i))
+            .through(scalarDivisionOf(1))
             .through(instrument)
             .into(audioSink);
     }
@@ -43,7 +43,7 @@ public class CMajorSubtractive extends DspApp {
     public static void main(String[] args) {
         var audioFormat = new AudioFormat(44100, 16, 1, true, false);
         var cMajor = new CMajorSubtractive(audioFormat);
-        var oscillator = MasterOscillator.create();
+        var oscillator = MainOscillator.create();
         cMajor.connectTo(oscillator);
 
         oscillator.oscillateUntil(DspApp::pressedEnter);

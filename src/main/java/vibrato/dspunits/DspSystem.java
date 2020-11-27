@@ -6,6 +6,7 @@ import vibrato.dspunits.filters.fir.AbstractFIRFilter;
 import vibrato.functions.Linear;
 import vibrato.functions.RealFunction;
 import vibrato.interpolators.Interpolator;
+import vibrato.music.synthesis.generators.WaveOscillator;
 import vibrato.music.synthesis.generators.WaveTable;
 import vibrato.vectors.Buffer;
 import vibrato.vectors.RealValue;
@@ -41,8 +42,24 @@ public class DspSystem extends CompositeUnit {
         return scalarFunction(Linear.linear(factor));
     }
 
+    protected final Filter<RealValue, RealValue> scalarDivisionOf(double numerator) {
+        return scalarFunction(input -> numerator / input);
+    }
+
+    protected final Filter<RealValue, RealValue> scalarDivisionBy(double denominator) {
+        return scalarFunction(input -> input / denominator);
+    }
+
     protected final Filter<RealValue, RealValue> diff = from(AbstractFIRFilter.create(1,
         (input, delay) -> input - delay.value(-1)
+    ));
+
+    protected final Filter<RealValue, RealValue> posDiff = from(AbstractFIRFilter.create(1,
+        (input, delay) -> Math.max(input - delay.value(-1), 0)
+    ));
+
+    protected final Filter<RealValue, RealValue> negDiff = from(AbstractFIRFilter.create(1,
+        (input, delay) -> Math.min(input - delay.value(-1), 0)
     ));
 
     protected final Filter<RealValue, RealValue> scalarSquareRoot = scalarFunction(Math::sqrt);
@@ -75,6 +92,16 @@ public class DspSystem extends CompositeUnit {
                 .limit(resolution)
                 .toArray()
         ).withCachedInterpolation(Interpolator.cubic);
+    }
+
+    protected Source<RealValue> scalarImpulsesAt(double frequency) {
+        return scalarsAt(2 * frequency, 1, 0).through(posDiff);
+    }
+
+    protected Source<RealValue> scalarsAt(double frequency, double... samples) {
+        var samplesTable = WaveTable.create(samples);
+        return scalarConstant(frequency / samples.length)
+            .through(WaveOscillator.create(samplesTable, Interpolator.truncating));
     }
 
 }

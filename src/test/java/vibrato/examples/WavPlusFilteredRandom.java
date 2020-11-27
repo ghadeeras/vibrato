@@ -5,7 +5,7 @@ import vibrato.dspunits.filters.iir.SecondOrderFilter;
 import vibrato.dspunits.sinks.AudioSink;
 import vibrato.dspunits.sources.AudioSource;
 import vibrato.dspunits.sources.RandomSource;
-import vibrato.oscillators.MasterOscillator;
+import vibrato.oscillators.MainOscillator;
 
 import javax.sound.sampled.AudioInputStream;
 
@@ -30,7 +30,7 @@ public class WavPlusFilteredRandom extends DspApp {
     public static void main(String[] args) {
         AudioInputStream audioInputStream = openAudioInputStream(args);
 
-        MasterOscillator oscillator = MasterOscillator.create();
+        MainOscillator oscillator = MainOscillator.create();
         WavPlusFilteredRandom system = new WavPlusFilteredRandom(audioInputStream);
         system.connectTo(oscillator);
 
