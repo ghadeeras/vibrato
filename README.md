@@ -1,4 +1,6 @@
 # Vibrato
+![ci-build](https://github.com/ghadeeras/vibrato/workflows/ci-build/badge.svg)
+
 Vibrato is a technique that musicians (specially of string instruments) use, to produce beautiful sounds from their 
 instruments :-) ... However, in the context of this project, Vibrato is an awesome (or soon to be so) digital signal 
 processing framework for the Java programing language.
