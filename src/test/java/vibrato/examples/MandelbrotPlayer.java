@@ -56,7 +56,7 @@ public class MandelbrotPlayer extends DspApp {
         MandelbrotPlayer system = new MandelbrotPlayer(clockSpeed);
         system.connectTo(oscillator);
 
-        loop(oscillator);
+        oscillator.oscillateUntil(DspApp::pressedEnter);
     }
 
 }

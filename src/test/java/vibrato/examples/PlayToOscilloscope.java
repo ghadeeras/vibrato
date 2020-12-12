@@ -5,21 +5,25 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import vibrato.dspunits.DspSource;
 import vibrato.dspunits.DspSystem;
 import vibrato.dspunits.filters.BufferingWindow;
 import vibrato.dspunits.filters.Mixer;
-import vibrato.fourier.FastFourierTransformer;
 import vibrato.dspunits.sinks.AudioSink;
 import vibrato.dspunits.sinks.Oscilloscope;
 import vibrato.dspunits.sources.AudioSource;
+import vibrato.fourier.FastFourierTransformer;
 import vibrato.oscillators.MainOscillator;
 
 import javax.sound.sampled.AudioInputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 
 public class PlayToOscilloscope extends Application {
 
     private static final int resolution = 768;
+    private final AtomicBoolean done = new AtomicBoolean(false);
 
     @Override
     public void start(Stage stage) {
@@ -29,11 +33,19 @@ public class PlayToOscilloscope extends Application {
         var oscillator = MainOscillator.create();
         var player = new AudioPlayer(stream, canvas);
         player.connectTo(oscillator);
-        oscillator.spawnOscillationThread(DspApp::pressedEnter);
+
+        BooleanSupplier terminationCondition = closed(stage);
+        oscillator.spawnOscillationThread(terminationCondition);
 
         stage.setTitle("Audio Plotter");
         stage.setScene(scene(group(canvas)));
         stage.show();
+    }
+
+    private BooleanSupplier closed(Stage stage) {
+        BooleanSupplier terminationCondition = done::get;
+        stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, e -> done.set(true));
+        return terminationCondition;
     }
 
     private Scene scene(Group group) {

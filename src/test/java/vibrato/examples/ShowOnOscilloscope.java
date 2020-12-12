@@ -5,6 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import vibrato.dspunits.DspSystem;
 import vibrato.dspunits.filters.BufferingWindow;
 import vibrato.dspunits.sinks.Oscilloscope;
@@ -16,9 +17,13 @@ import vibrato.music.synthesis.generators.WaveTable;
 import vibrato.oscillators.MainOscillator;
 import vibrato.vectors.RealValue;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
+
 public class ShowOnOscilloscope extends Application {
 
     private static final int resolution = 768;
+    private final AtomicBoolean done = new AtomicBoolean(false);
 
     @Override
     public void start(Stage stage) {
@@ -27,14 +32,19 @@ public class ShowOnOscilloscope extends Application {
         var oscillator = MainOscillator.create();
         var viewer = new Viewer(canvas);
         viewer.connectTo(oscillator);
-        oscillator.spawnOscillationThread(() -> {
-            sleep();
-            return DspApp.pressedEnter();
-        });
+        oscillator.spawnOscillationThread(closed(stage));
 
         stage.setTitle("Viewer");
         stage.setScene(scene(group(canvas)));
         stage.show();
+    }
+
+    private BooleanSupplier closed(Stage stage) {
+        stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, e -> done.set(true));
+        return () -> {
+            sleep();
+            return done.get();
+        };
     }
 
     private void sleep() {

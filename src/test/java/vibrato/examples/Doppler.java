@@ -39,7 +39,7 @@ public class Doppler extends DspApp {
         var system = new Doppler(audioFormat);
         system.connectTo(oscillator);
 
-        loop(oscillator);
+        oscillator.oscillateUntil(DspApp::pressedEnter);
     }
 
 }

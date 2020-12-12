@@ -34,7 +34,7 @@ public class WavPlusFilteredRandom extends DspApp {
         WavPlusFilteredRandom system = new WavPlusFilteredRandom(audioInputStream);
         system.connectTo(oscillator);
 
-        loop(oscillator);
+        oscillator.oscillateUntil(DspApp::pressedEnter);
     }
 
 }

@@ -3,7 +3,6 @@ package vibrato.examples;
 import vibrato.dspunits.DspSystem;
 import vibrato.functions.Linear;
 import vibrato.functions.RealFunction;
-import vibrato.oscillators.MainOscillator;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -11,28 +10,36 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.DoubleStream;
 
 public abstract class DspApp extends DspSystem {
+
+    private static volatile boolean pressedEnter = false;
+    private static ExecutorService executorService = null;
 
     protected DspApp(double clockSpeed) {
         super(clockSpeed);
     }
 
-    public static void loop(MainOscillator oscillator) {
-        System.out.println();
-        System.out.println("Press [Enter] to stop.");
-        while (!pressedEnter()) {
-            long time = System.currentTimeMillis();
-            while (System.currentTimeMillis() - time < 100) {
-                oscillator.oscillate(100);
-            }
+    public static boolean pressedEnter() {
+        if (executorService == null) {
+            executorService = Executors.newSingleThreadExecutor();
+            executorService.execute(DspApp::waitForEnter);
         }
+        if (pressedEnter) {
+            executorService.shutdown();
+            executorService = null;
+        }
+        return pressedEnter;
     }
 
-    public static boolean pressedEnter() {
+    private static void waitForEnter() {
         try {
-            return System.in.available() > 0;
+            System.out.println();
+            System.out.println("Waiting until the [Enter] key is pressed ...");
+            pressedEnter = System.in.read() != 0;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

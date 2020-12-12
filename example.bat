@@ -1,0 +1,2 @@
+set MODULE_PATH=build\libs\javafx-base-14.jar;build\libs\javafx-base-14-win.jar;build\libs\javafx-graphics-14-win.jar
+%JAVA_HOME%\bin\java.exe --module-path=%MODULE_PATH% --add-modules=javafx.graphics -cp %MODULE_PATH%;build\libs\vibrato-1.0-SNAPSHOT.jar;build\classes\java\test vibrato.examples.%*
