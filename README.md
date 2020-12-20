@@ -1,11 +1,15 @@
 # Vibrato
-![ci-build](https://github.com/ghadeeras/vibrato/workflows/ci-build/badge.svg)
+![ci-java-build](https://github.com/ghadeeras/vibrato/workflows/ci-java-build/badge.svg)
 
 Vibrato is a technique that musicians use to produce beautiful sounds from their instruments :-) ... However, in the 
 context of this project, Vibrato is an awesome (or soon to be so) digital signal processing framework for the Java 
 programing language.
 
 It is still in a very early stage of the development process. So, bear with me please :-)
+
+**NEW**: This repository will also host a somehow similar library for TypeScript/JavaScript:
+[Vibrato.js](./js/README.md) :-) It is currently in the 'js' sub-directory but could move later to its own branch, or
+perhaps its own repository.
 
 ## Installation
 Currently, there are no binary distributions for this framework. So, in order to use it, you would need to download the 
@@ -263,7 +267,7 @@ directory](src/test/java/vibrato/examples). To follow is a brief description of 
  `BasicFMInstrument` class to use frequency modulation and apply an envelope on each note.
  * [**C Major (Subtractive)**](src/test/java/vibrato/examples/CMajorSubtractive.java): Same as C Major but applies a 
  dynamic comb filter on white noise to produce notes and their harmonics.
- * [**Mandlebrot**](src/test/java/vibrato/examples/MandelbrotPlayer.java): Playing a Mandelbrot chord :-).
+ * [**Mandelbrot**](src/test/java/vibrato/examples/MandelbrotPlayer.java): Playing a Mandelbrot chord :-).
  * [**Doppler**](src/test/java/vibrato/examples/Doppler.java): An example simulating Doppler effect. It simulates an 
  audio source that is moving around the listener.
  * [**Play To Oscilloscope**](src/test/java/vibrato/examples/CMajor.java): An example that plays a WAV file, performing
