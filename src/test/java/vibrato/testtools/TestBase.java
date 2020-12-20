@@ -11,9 +11,10 @@ import java.util.stream.Stream;
 
 public class TestBase {
 
-    private int bigNumber = 1 << 20;
+    private final int bigNumber = 1 << 20;
 
-    private Random random = new Random(getClass().getSimpleName().hashCode());
+    protected final long seed = getClass().getSimpleName().hashCode();
+    protected final Random random = new Random(seed);
 
     public <T> void forAnyOf(Generator<T> set, Consumer<T> check) {
         int sampleSize = 100;
