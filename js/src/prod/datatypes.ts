@@ -8,7 +8,7 @@ export interface Primitive<S extends PrimitiveSize> {
 
 }
 
-export interface Vector<PS extends PrimitiveSize, P extends Primitive<PS>, S extends number> {
+export interface Vector<P extends Primitive<any>, S extends number> {
 
     primitiveType: P
     
@@ -113,8 +113,11 @@ class FloatView extends AbstractView {
 
 }
 
-class Integer implements Primitive<4> {
+export class Integer implements Primitive<4> {
 
+    private constructor() {
+    }
+    
     get sizeInBytes(): 4 {
         return 4
     }
@@ -123,10 +126,15 @@ class Integer implements Primitive<4> {
         return new IntegerView(buffer, this)
     }
 
+    static readonly type = new Integer()
+
 }
 
-class Real implements Primitive<8> {
+export class Real implements Primitive<8> {
 
+    private constructor() {
+    }
+    
     get sizeInBytes(): 8 {
         return 8
     }
@@ -135,12 +143,14 @@ class Real implements Primitive<8> {
         return new FloatView(buffer, this)
     }
 
+    static readonly type = new Real()
+
 }
 
-export const integer = new Integer()
-export const real = new Real()
+export const integer = Integer.type
+export const real = Real.type
 
-class GenericVector<PS extends PrimitiveSize, P extends Primitive<PS>, S extends number> implements Vector<PS, P, S> {
+class GenericVector<P extends Primitive<any>, S extends number> implements Vector<P, S> {
     
     constructor(readonly primitiveType: P, readonly size: S) {}
 
@@ -154,26 +164,40 @@ class GenericVector<PS extends PrimitiveSize, P extends Primitive<PS>, S extends
 
 }
 
-export function vectorOf<PS extends PrimitiveSize, P extends Primitive<PS>, S extends number>(size: S, primitiveType: P): Vector<PS, P, S> {
+export function vectorOf<P extends Primitive<any>, S extends number>(size: S, primitiveType: P): Vector<P, S> {
     return new GenericVector(primitiveType, size)
 }
 
-export class Scalar extends GenericVector<8, Real, 1> {
+export class Discrete extends GenericVector<Integer, 1> {
+
+    private constructor() {
+        super(integer, 1)
+    }
+
+    static readonly type = new Discrete()
+
+}
+
+export class Scalar extends GenericVector<Real, 1> {
 
     private constructor() {
         super(real, 1)
     }
 
-    static type = new Scalar()
+    static readonly type = new Scalar()
 
 }
 
-export class Complex extends GenericVector<8, Real, 2> {
+export class Complex extends GenericVector<Real, 2> {
 
     private constructor() {
         super(real, 2)
     }
 
-    static type = new Complex()
+    static readonly type = new Complex()
 
 }
+
+export const discrete = Discrete.type
+export const scalar = Scalar.type
+export const complex = Complex.type

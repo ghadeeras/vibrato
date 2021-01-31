@@ -34,5 +34,8 @@
     "mocha": "^8.2.1",
     "nyc": "^15.1.0",
     "source-map-support": "^0.5.19"
+  },
+  "dependencies": {
+    "binaryen": "^98.0.0"
   }
 }
