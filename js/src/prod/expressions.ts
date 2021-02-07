@@ -1,14 +1,36 @@
-import { assert } from 'chai';
-import * as datatypes from './datatypes'
+import * as types from './datatypes'
+import * as values from './values'
+
+let nameSequencer = 0
 
 export interface Expression {
+
+    accept<T>(visitor: Visitor<T>): T
+
 }
 
-export interface DataExpression<V extends datatypes.Vector<any, any>> extends Expression {
+export abstract class Value<A extends types.NumberArray, S extends number> implements Expression {
 
-    type: V
+    readonly name: string
+    readonly visible: boolean
+    
+    constructor(readonly type: types.Vector<A, S>, name: string | null) {
+        if (name && name.charAt(0) != '_') {
+            this.name = `${name}`
+            this.visible = true
+        } else {
+            this.name = name ? name : `_${nameSequencer++}`
+            this.visible = false
+        }
+    }
+    
+    abstract accept<T>(visitor: Visitor<T>): T
 
-    evaluate(): number[] | null
+    abstract get(): number[] | null
+
+    delay<L extends number>(length: L): Delay<A, S, L> {
+        throw new Error('Method not implemented.');
+    }
 
 }
 
@@ -18,41 +40,18 @@ export interface Function<I extends Expression, O extends Expression> extends Ex
 
 }
 
-export interface Delay<V extends datatypes.Vector<any, any>, L extends number> extends Expression {
+export interface Delay<A extends types.NumberArray, S extends number, L extends number> extends Expression {
 
     length: L
 
-    at(index: DataExpression<datatypes.Discrete>): DataExpression<V>
+    value: Value<A, S>
+
+    at(index: Value<Int32Array, 1>): Value<A, S>
 
 }
 
-export class Literal<V extends datatypes.Vector<any, any>> implements DataExpression<V> {
+export interface Visitor<T> {
 
-    private value: number[]
+    visit<A extends types.NumberArray, S extends number>(exp: values.Literal<A, S>): T;
 
-    private constructor(readonly type: V, value: number[]) {
-        assert(type.size == value.length)
-        this.value = [...value]
-    }
-
-    evaluate(): number[] {
-        return [...this.value];
-    }
-
-    static discrete(value: number) {
-        return new Literal(datatypes.discrete, [value])
-    }
-    
-    static scalar(value: number) {
-        return new Literal(datatypes.scalar, [value])
-    }
-    
-    static complex(real: number, imaginary: number) {
-        return new Literal(datatypes.complex, [real, imaginary])
-    }
-    
-    static vector(...components: number[]) {
-        return new Literal(datatypes.vectorOf(components.length, datatypes.real), components)
-    }
-    
 }

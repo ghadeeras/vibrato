@@ -1,146 +1,115 @@
-export type PrimitiveSize = 1 | 2 | 4 | 8
+export type Case<T, A, B> = T extends A ? B : never
 
-export interface Primitive<S extends PrimitiveSize> {
+export type NumberArray = Int32Array | Float64Array
 
-    sizeInBytes: S
+export type PrimitiveSize<A extends NumberArray> = 
+      Case<A, Int32Array, 4> 
+    | Case<A, Float64Array, 8>
 
-    view(buffer: ArrayBuffer): PrimitiveView
+export type PrimitiveName<A extends NumberArray> = 
+      Case<A, Int32Array, "integer"> 
+    | Case<A, Float64Array, "real">
+
+export interface RawView {
+
+    get(offset: number): number
+
+    set(offset: number, value: number): RawView
 
 }
 
-export interface Vector<P extends Primitive<any>, S extends number> {
+export interface Primitive<A extends NumberArray> {
 
-    primitiveType: P
+    readonly name: PrimitiveName<A>
     
-    size: S
+    readonly sizeInBytes: PrimitiveSize<A>
 
-    sizeInBytes: number
+    view(buffer: ArrayBuffer, offset?: number, length?: number): A
 
-    view(buffer: ArrayBuffer): PrimitiveView
-
-}
-
-export interface PrimitiveView {
-
-    get(firstBytePosition: number): number
-
-    set(firstBytePosition: number, value: number): void
-
-    getComponent(component: number, firstBytePosition: number): number
-
-    setComponent(component: number, firstBytePosition: number, value: number): void
+    rawView(buffer: ArrayBuffer, offset?: number): RawView
 
 }
 
-abstract class AbstractView implements PrimitiveView {
+export interface Vector<A extends NumberArray, S extends number> {
 
-    private dataView: DataView
+    readonly primitiveType: Primitive<A>
     
-    public constructor(
+    readonly size: S
+
+    readonly sizeInBytes: number
+
+    view(buffer: ArrayBuffer, offset?: number, length?: number): A[]
+
+    flatView(buffer: ArrayBuffer, offset?: number, length?: number): A
+
+}
+
+class GenericRawView implements RawView {
+
+    private view: DataView
+    
+    constructor(
         buffer: ArrayBuffer, 
-        private readonly primitiveType: Primitive<PrimitiveSize>
+        offset: number, 
+        private getter: (dv: DataView, o: number) => number, 
+        private setter: (dv: DataView, o: number, v: number) => void
     ) {
-        this.dataView = new DataView(buffer)
+        this.view = new DataView(buffer, offset)
     }
+
+    get(offset: number): number {
+        return this.getter(this.view, offset)
+    }
+
+    set(offset: number, value: number): RawView {
+        this.setter(this.view, offset, value)
+        return this
+    }
+
+}
+
+export class Integer implements Primitive<Int32Array> {
+
+    readonly name = "integer"
+
+    readonly sizeInBytes = 4
     
-    get(firstBytePosition: number): number {
-        return this.getComponent(0, firstBytePosition)
-    }
-
-    set(firstBytePosition: number, value: number): void {
-        this.setComponent(0, firstBytePosition, value)
-    }
-
-    getComponent(component: number, firstBytePosition: number): number {
-        return this.getAtOffset(this.dataView, this.primitiveType, this.offset(component, firstBytePosition));
-    }
-
-    setComponent(component: number, firstBytePosition: number, value: number): void {
-        this.setAtOffset(this.dataView, this.primitiveType, this.offset(component, firstBytePosition), value);
-    }
-
-    private offset(component: number, firstBytePosition: number): number {
-        return component * this.primitiveType.sizeInBytes + firstBytePosition
-    }
-
-    abstract getAtOffset(dataView: DataView, primitiveType: Primitive<PrimitiveSize>, offset: number): number
-
-    abstract setAtOffset(dataView: DataView, primitiveType: Primitive<PrimitiveSize>, offset: number, value: number): void
-
-}
-
-class IntegerView extends AbstractView {
-
-    getAtOffset(dataView: DataView, primitiveType: Primitive<PrimitiveSize>, offset: number): number {
-        switch (primitiveType.sizeInBytes) {
-            case 1: return dataView.getInt8(offset)
-            case 2: return dataView.getInt16(offset)
-            case 4: return dataView.getInt32(offset)
-            case 8: return dataView.getInt32(offset)
-        }
-    }
-
-    setAtOffset(dataView: DataView, primitiveType: Primitive<PrimitiveSize>, offset: number, value: number): void {
-        switch (primitiveType.sizeInBytes) {
-            case 1: return dataView.setInt8(offset, value)
-            case 2: return dataView.setInt16(offset, value)
-            case 4: return dataView.setInt32(offset, value)
-            case 8: return dataView.setInt32(offset, value)
-        }
-    }
-
-}
-
-class FloatView extends AbstractView {
-
-    getAtOffset(dataView: DataView, primitiveType: Primitive<PrimitiveSize>, offset: number): number {
-        switch (primitiveType.sizeInBytes) {
-            case 1: throw new Error("8-bit floats are not supported!")
-            case 2: throw new Error("16-bit floats are not supported!")
-            case 4: return dataView.getFloat32(offset)
-            case 8: return dataView.getFloat64(offset)
-        }
-    }
-
-    setAtOffset(dataView: DataView, primitiveType: Primitive<PrimitiveSize>, offset: number, value: number): void {
-        switch (primitiveType.sizeInBytes) {
-            case 1: throw new Error("8-bit floats are not supported!")
-            case 2: throw new Error("16-bit floats are not supported!")
-            case 4: return dataView.setFloat32(offset, value)
-            case 8: return dataView.setFloat64(offset, value)
-        }
-    }
-
-}
-
-export class Integer implements Primitive<4> {
-
     private constructor() {
     }
     
-    get sizeInBytes(): 4 {
-        return 4
+    view(buffer: ArrayBuffer, offset: number = 0, length: number = 1): Int32Array {
+        return new Int32Array(buffer, offset, length)
     }
 
-    view(buffer: ArrayBuffer): PrimitiveView {
-        return new IntegerView(buffer, this)
+    rawView(buffer: ArrayBuffer, offset: number = 0): RawView {
+        return new GenericRawView(buffer, offset, 
+            (dv, o) => dv.getInt32(o), 
+            (dv, o, v) => dv.setInt32(o, v)
+        )
     }
 
     static readonly type = new Integer()
 
 }
 
-export class Real implements Primitive<8> {
+export class Real implements Primitive<Float64Array> {
 
+    readonly name = "real"
+
+    readonly sizeInBytes = 8
+    
     private constructor() {
     }
     
-    get sizeInBytes(): 8 {
-        return 8
+    view(buffer: ArrayBuffer, offset: number = 0, length: number = 1): Float64Array {
+        return new Float64Array(buffer, offset, length)
     }
 
-    view(buffer: ArrayBuffer): PrimitiveView {
-        return new FloatView(buffer, this)
+    rawView(buffer: ArrayBuffer, offset: number = 0): RawView {
+        return new GenericRawView(buffer, offset, 
+            (dv, o) => dv.getFloat64(o), 
+            (dv, o, v) => dv.setFloat64(o, v)
+        )
     }
 
     static readonly type = new Real()
@@ -150,25 +119,33 @@ export class Real implements Primitive<8> {
 export const integer = Integer.type
 export const real = Real.type
 
-class GenericVector<P extends Primitive<any>, S extends number> implements Vector<P, S> {
+class GenericVector<A extends NumberArray, S extends number> implements Vector<A, S> {
     
-    constructor(readonly primitiveType: P, readonly size: S) {}
+    readonly sizeInBytes: number
 
-    get sizeInBytes(): number {
-        return this.primitiveType.sizeInBytes * this.size
+    constructor(readonly primitiveType: Primitive<A>, readonly size: S) {
+        this.sizeInBytes = primitiveType.sizeInBytes * size
     }
 
-    view(buffer: ArrayBuffer): PrimitiveView {
-        return this.primitiveType.view(buffer)
+    view(buffer: ArrayBuffer, offset: number = 0, length: number = 1): A[] {
+        const result: A[] = []
+        for (let o = offset; length-- > 0; o += this.primitiveType.sizeInBytes) {
+            result.push(this.primitiveType.view(buffer, o, this.size))
+        }
+        return result
+    }
+
+    flatView(buffer: ArrayBuffer, offset: number = 0, length: number = 1): A {
+        return this.primitiveType.view(buffer, offset, length * this.size)
     }
 
 }
 
-export function vectorOf<P extends Primitive<any>, S extends number>(size: S, primitiveType: P): Vector<P, S> {
+export function vectorOf<A extends NumberArray, S extends number>(size: S, primitiveType: Primitive<A>): Vector<A, S> {
     return new GenericVector(primitiveType, size)
 }
 
-export class Discrete extends GenericVector<Integer, 1> {
+export class Discrete extends GenericVector<Int32Array, 1> {
 
     private constructor() {
         super(integer, 1)
@@ -178,7 +155,7 @@ export class Discrete extends GenericVector<Integer, 1> {
 
 }
 
-export class Scalar extends GenericVector<Real, 1> {
+export class Scalar extends GenericVector<Float64Array, 1> {
 
     private constructor() {
         super(real, 1)
@@ -188,7 +165,7 @@ export class Scalar extends GenericVector<Real, 1> {
 
 }
 
-export class Complex extends GenericVector<Real, 2> {
+export class Complex extends GenericVector<Float64Array, 2> {
 
     private constructor() {
         super(real, 2)

@@ -20,6 +20,7 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x]
+        wabt-version: [1.0.20]
 
     steps:
     - name: Checkout source code
@@ -29,6 +30,17 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
+    - name: Use WABT ${{ matrix.wabt-version }}
+      uses: mwilliamson/setup-wabt-action@v1
+      with:
+        wabt-version: ${{ matrix.wabt-version }}
+
+    - name: Build WASM Modules
+      working-directory: js
+      run: |
+        chmod +x ./build-wasm.sh
+        bash ./build-wasm.sh
 
     - name: NPM build/test
       working-directory: js

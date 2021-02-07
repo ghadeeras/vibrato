@@ -2,6 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "tsc: build",
 			"type": "typescript",
 			"tsconfig": "tsconfig.json",
 			"problemMatcher": [
@@ -10,14 +11,19 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			},
-			"label": "tsc: build"
+			}
 		},
 		{
 			"label": "npm: test",
 			"type": "npm",
 			"script": "test",
 			"problemMatcher": "$tsc",
+			"group": "build"
+		},
+		{
+			"label": "wasm: build",
+			"type": "shell",
+			"command": "${cwd}/build-wasm.sh",
 			"group": "build"
 		}
 	]
