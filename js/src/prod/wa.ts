@@ -19,6 +19,11 @@ export function module<E extends WebAssembly.Exports>(sourceFile: string, caster
     }
 }
 
+export async function instantiate<E extends WebAssembly.Exports>(buffer: ArrayBuffer, caster: Caster<E>, dependencies: Modules): Promise<E> {
+    const waModule = await WebAssembly.instantiate(buffer, asImports(dependencies))
+    return caster(waModule.instance.exports)
+}
+
 export async function loadWeb<M extends Modules>(waPath: string, modules: M, first: ModuleName<M>, ...rest: ModuleName<M>[]): Promise<M> {
     const firstModule = modules[first]
     const response = await fetch(waPath + "/" + firstModule.sourceFile, { method : "get", mode : "no-cors" })
