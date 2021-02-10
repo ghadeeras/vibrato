@@ -20,39 +20,31 @@ const assembler = new asm.Assembler([
 
 console.log(assembler.textCode)
 
-const rtModulesPromise = rt.initWaModulesFS("./out/wa")
-const rtExportsPromise = rtModulesPromise
-    .then(rtModules => rtModules.rt.exports)
-    .then(exp => exp ?? error("Couldn't load Vibrato runtime!"))
-const testExportsPromise = assembler.exports(rtModulesPromise, exports => exports as TestExports)
+const rtModules = rt.initWaModulesFS("./out/rt")
+const mem = notNull(rtModules.mem.exports, "Couldn't load Vibrato runtime!")
+const test = assembler.exports<TestExports>(rtModules)
 
-describe("Literal", async () => {
+describe("Literal", () => {
 
-    it("returns literal scalar values", async () => {
-        const testModules = await testExportsPromise
-        expect(testModules.pi()).to.equal(3.14)
+    it("returns literal scalar values", () => {
+        expect(test.pi()).to.equal(3.14)
     })
 
-    it("returns literal discrete values", async () => {
-        const testModules = await testExportsPromise
-        expect(testModules.five()).to.equal(5)
+    it("returns literal discrete values", () => {
+        expect(test.five()).to.equal(5)
     })
 
-    it("returns literal complex values", async () => {
-        const rtExports = await rtExportsPromise
-        const testModules = await testExportsPromise
-        const ref = testModules.complex(rtExports.allocate64(2))
-        const view = types.complex.view(rtExports.stack.buffer, ref)[0]
+    it("returns literal complex values", () => {
+        const ref = test.complex(mem.allocate64(2))
+        const view = types.complex.view(mem.stack.buffer, ref)[0]
         expect(view.length).to.equal(2)
         expect(view[0]).to.equal(0.7)
         expect(view[1]).to.equal(0.5)
     })
 
-    it("returns literal vector values", async () => {
-        const rtExports = await rtExportsPromise
-        const testModules = await testExportsPromise
-        const ref = testModules.vector(rtExports.allocate64(3))
-        const view = types.vectorOf(3, types.real).view(rtExports.stack.buffer, ref)[0]
+    it("returns literal vector values", () => {
+        const ref = test.vector(mem.allocate64(3))
+        const view = types.vectorOf(3, types.real).view(mem.stack.buffer, ref)[0]
         expect(view.length).to.equal(3)
         expect(view[0]).to.equal(1.2)
         expect(view[1]).to.equal(2.3)
@@ -61,6 +53,9 @@ describe("Literal", async () => {
 
 })
 
-function error<T>(message: string): T {
-    throw new Error(message)
+function notNull<T>(value: T | undefined, message: string): T {
+    if (!value) {
+        throw new Error(message)
+    }
+    return value
 }

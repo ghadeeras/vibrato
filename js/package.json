@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "test": "nyc --reporter=html -- mocha --require esm --require source-map-support/register out/test/**/*.test.js",
+    "test": "nyc --reporter=html -- mocha --require esm --require source-map-support/register --recursive \"./out/test/**/*.test.js\"",
     "pretest": "tsc"
   },
   "repository": {

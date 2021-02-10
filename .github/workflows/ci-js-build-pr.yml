@@ -36,11 +36,11 @@ jobs:
       with:
         wabt-version: ${{ matrix.wabt-version }}
 
-    - name: Build WASM Modules
+    - name: Build Runtime WASM Modules
       working-directory: js
       run: |
-        chmod +x ./build-wasm.sh
-        bash ./build-wasm.sh
+        chmod +x ./build-rt.sh
+        bash ./build-rt.sh
 
     - name: NPM build/test
       working-directory: js

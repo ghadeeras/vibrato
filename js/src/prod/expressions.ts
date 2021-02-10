@@ -88,7 +88,7 @@ export abstract class Value<A extends types.NumberArray, S extends number> imple
     }
 
     protected allocateReference(module: binaryen.Module): binaryen.ExpressionRef {
-        const functionName: keyof rt.RuntimeExports = this.type.primitiveType == types.integer ? "allocate32" : "allocate64"
+        const functionName: keyof rt.MemExports = this.type.primitiveType == types.integer ? "allocate32" : "allocate64"
         return module.call(functionName, [module.i32.const(this.type.size)], binaryen.i32)
     }
 

@@ -1,6 +1,7 @@
 import * as types from './datatypes' 
 import * as exps from './expressions'
 import * as wa from './wa';
+import * as rt from './rt';
 
 import binaryen from 'binaryen'
 
@@ -12,14 +13,8 @@ export class Assembler {
     constructor(values: exps.Value<types.NumberArray, number>[]) {
         const module = new binaryen.Module();
 
-        module.addMemoryImport("stack", "rt", "stack")
-        module.addFunctionImport("enter", "rt", "enter", binaryen.createType([]), binaryen.none)
-        module.addFunctionImport("leave", "rt", "leave", binaryen.createType([]), binaryen.none)
-        module.addFunctionImport("allocate8", "rt", "allocate8", binaryen.createType([binaryen.i32]), binaryen.i32)
-        module.addFunctionImport("allocate16", "rt", "allocate16", binaryen.createType([binaryen.i32]), binaryen.i32)
-        module.addFunctionImport("allocate32", "rt", "allocate32", binaryen.createType([binaryen.i32]), binaryen.i32)
-        module.addFunctionImport("allocate64", "rt", "allocate64", binaryen.createType([binaryen.i32]), binaryen.i32)
-
+        rt.addImportsToModule(module)
+        
         for (let value of values) {
             value.declarations(module)
             const exports = value.exports();
@@ -34,9 +29,8 @@ export class Assembler {
         module.dispose();
     }
 
-    async exports<E extends WebAssembly.Exports>(rtModulesPromise: Promise<wa.Modules>, caster: wa.Caster<E>): Promise<E> {
-        return rtModulesPromise
-            .then(rtModules => wa.instantiate(this.binaryCode.buffer, caster, rtModules))
+    exports<E extends WebAssembly.Exports>(rtModules: rt.RuntimeModules): E {
+        return wa.instantiate<E>(this.binaryCode.buffer, rtModules)
     }
 
 }
