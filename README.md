@@ -1,15 +1,11 @@
 # Vibrato
-![ci-java-build](https://github.com/ghadeeras/vibrato/workflows/ci-java-build/badge.svg)
+![ci-build](https://github.com/ghadeeras/vibrato/workflows/ci-build/badge.svg)
 
 Vibrato is a technique that musicians use to produce beautiful sounds from their instruments :-) ... However, in the 
 context of this project, Vibrato is an awesome (or soon to be so) digital signal processing framework for the Java 
 programing language.
 
 It is still in a very early stage of the development process. So, bear with me please :-)
-
-**NEW**: This repository will also host a somehow similar library for TypeScript/JavaScript:
-[Vibrato.js](./js/README.md) :-) It is currently in the 'js' sub-directory but could move later to its own branch, or
-perhaps its own repository.
 
 ## Installation
 Currently, there are no binary distributions for this framework. So, in order to use it, you would need to download the 

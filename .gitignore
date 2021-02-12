@@ -16,10 +16,3 @@ gradle-app.setting
 /.idea/
 
 *.wav
-
-# JavaScript project ignored paths
-js/.nyc_output
-js/coverage
-js/node_modules
-js/out
-js/tsconfig.tsbuildinfo
